@@ -7,9 +7,10 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import SectionHeader from "@/components/ui/SectionHeader";
+import CinematicSection from "@/components/ui/CinematicSection";
 import GlowCard from "@/components/ui/GlowCard";
 import SectionBackground from "@/components/ui/SectionBackground";
+import SectionHeader from "@/components/ui/SectionHeader";
 
 const services = [
   {
@@ -52,13 +53,13 @@ const services = [
 
 export default function Consulting() {
   return (
-    <section id="consulting" className="relative overflow-hidden bg-[#050816] py-40">
+    <CinematicSection id="consulting" glow="left">
       <SectionBackground word="CONSULTING" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         <SectionHeader
           eyebrow="CONSULTING"
-          title="From learning outcomes to enterprise outcomes."
+          title={"From learning outcomes\nto enterprise outcomes."}
           description="Archon supports organizations through SAP consulting, software engineering, AI, integrations and technology transformation."
         />
 
@@ -86,6 +87,6 @@ export default function Consulting() {
           })}
         </div>
       </div>
-    </section>
+    </CinematicSection>
   );
 }

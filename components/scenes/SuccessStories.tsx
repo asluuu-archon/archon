@@ -1,4 +1,5 @@
 import CountUp from "@/components/animations/CountUp";
+import CinematicSection from "@/components/ui/CinematicSection";
 import GlowCard from "@/components/ui/GlowCard";
 import SectionBackground from "@/components/ui/SectionBackground";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -26,13 +27,15 @@ const stories = [
 
 export default function SuccessStories() {
   return (
-    <section id="stories" className="relative overflow-hidden bg-[#050816] py-40">
+    <CinematicSection id="stories" glow="left">
       <SectionBackground word="IMPACT" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         <SectionHeader
           eyebrow="SUCCESS STORIES"
-          title={"We may not promise jobs to everyone.\nBut we promise skill, direction and honest effort."}
+          title={
+            "We may not promise jobs to everyone.\nBut we promise skill, direction and honest effort."
+          }
         />
 
         <div className="mt-20 grid items-stretch gap-8 md:grid-cols-3">
@@ -51,6 +54,6 @@ export default function SuccessStories() {
           ))}
         </div>
       </div>
-    </section>
+    </CinematicSection>
   );
 }

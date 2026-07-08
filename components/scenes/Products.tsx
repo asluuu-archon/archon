@@ -1,15 +1,16 @@
 import { Bot, Boxes, Video } from "lucide-react";
 
-import { products } from "@/data/home";
+import CinematicSection from "@/components/ui/CinematicSection";
 import GlowCard from "@/components/ui/GlowCard";
 import SectionBackground from "@/components/ui/SectionBackground";
 import SectionHeader from "@/components/ui/SectionHeader";
+import { products } from "@/data/home";
 
 const icons = [Boxes, Video, Bot];
 
 export default function Products() {
   return (
-    <section id="products" className="relative overflow-hidden bg-[#050816] py-40">
+    <CinematicSection id="products" glow="right">
       <SectionBackground word="PRODUCTS" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
@@ -25,8 +26,8 @@ export default function Products() {
 
             return (
               <GlowCard key={product.name} delay={index * 0.08}>
-                <div className="mb-8 flex items-center justify-between">
-                  <Icon className="h-10 w-10 text-cyan-300 transition duration-300 group-hover:scale-110" />
+                <div className="mb-8 flex items-center justify-between gap-6">
+                  <Icon className="h-10 w-10 shrink-0 text-cyan-300 transition duration-300 group-hover:scale-110" />
 
                   <div className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-xs uppercase tracking-[0.25em] text-cyan-300">
                     {product.status}
@@ -49,6 +50,6 @@ export default function Products() {
           })}
         </div>
       </div>
-    </section>
+    </CinematicSection>
   );
 }

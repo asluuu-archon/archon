@@ -1,6 +1,6 @@
 export default function WhyArchon() {
   return (
-    <section className="relative overflow-hidden bg-[#050816] px-6 py-32 text-white">
+    <section id="why" className="relative overflow-hidden bg-[#050816] px-6 py-32 text-white">
       <div className="mx-auto max-w-6xl">
         <p className="mb-6 text-sm font-semibold uppercase tracking-[0.4em] text-cyan-300">
           Why Archon Exists

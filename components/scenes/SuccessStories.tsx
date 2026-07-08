@@ -1,16 +1,24 @@
+import CountUp from "@/components/animations/CountUp";
+import GlowCard from "@/components/ui/GlowCard";
+import SectionBackground from "@/components/ui/SectionBackground";
+import SectionHeader from "@/components/ui/SectionHeader";
+
 const stories = [
   {
-    number: "7000+",
+    value: 7000,
+    suffix: "+",
     title: "Learners skilled",
     text: "Not everyone starts with confidence. Our focus is to make sure every learner leaves with stronger real-world skills.",
   },
   {
-    number: "1st",
-    title: "Student to Switzerland",
-    text: "Jimmy, Archon's first student, is now working as a consultant in Switzerland.",
+    value: 13,
+    suffix: "+",
+    title: "Years of building",
+    text: "From 2013 to today, Archon has continuously evolved with learners, clients, consultants and technology.",
   },
   {
-    number: "4",
+    value: 4,
+    suffix: "",
     title: "Global locations",
     text: "India, Belgium, Sydney and the UK form the current Archon global footprint.",
   },
@@ -18,34 +26,28 @@ const stories = [
 
 export default function SuccessStories() {
   return (
-    <section className="relative overflow-hidden bg-[#050816] px-6 py-32 text-white">
-      <div className="mx-auto max-w-6xl">
-        <p className="mb-6 text-sm font-semibold uppercase tracking-[0.4em] text-cyan-300">
-          Success Stories
-        </p>
+    <section id="stories" className="relative overflow-hidden bg-[#050816] py-40">
+      <SectionBackground word="IMPACT" />
 
-        <h2 className="max-w-5xl text-balance text-4xl font-bold leading-tight md:text-6xl lg:text-7xl">
-          We may not promise jobs to everyone.
-          <br />
-          But we promise skill, direction and honest effort.
-        </h2>
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
+        <SectionHeader
+          eyebrow="SUCCESS STORIES"
+          title={"We may not promise jobs to everyone.\nBut we promise skill, direction and honest effort."}
+        />
 
-        <div className="mt-16 grid gap-5 md:grid-cols-3">
-          {stories.map((story) => (
-            <div
-              key={story.title}
-              className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-8 backdrop-blur-md"
-            >
-              <div className="text-5xl font-bold text-cyan-300">
-                {story.number}
+        <div className="mt-20 grid items-stretch gap-8 md:grid-cols-3">
+          {stories.map((story, index) => (
+            <GlowCard key={story.title} delay={index * 0.08}>
+              <div className="text-6xl font-bold text-cyan-300">
+                <CountUp value={story.value} suffix={story.suffix} />
               </div>
 
-              <h3 className="mt-8 text-2xl font-bold">{story.title}</h3>
+              <h3 className="mt-8 text-2xl font-semibold text-white">
+                {story.title}
+              </h3>
 
-              <p className="mt-4 text-base leading-7 text-slate-300">
-                {story.text}
-              </p>
-            </div>
+              <p className="mt-5 leading-7 text-slate-300">{story.text}</p>
+            </GlowCard>
           ))}
         </div>
       </div>

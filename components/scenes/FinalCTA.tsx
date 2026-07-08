@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 export default function FinalCTA() {
   return (
-    <section className="relative overflow-hidden bg-[#050816] px-6 py-32 text-center text-white">
+    <section id="contact" className="relative overflow-hidden bg-[#050816] px-6 py-32 text-center text-white">
       <div className="mx-auto max-w-5xl rounded-[3rem] border border-white/10 bg-white/[0.04] px-8 py-20 backdrop-blur-xl">
         <p className="mb-6 text-sm font-semibold uppercase tracking-[0.4em] text-cyan-300">
           Build With Archon

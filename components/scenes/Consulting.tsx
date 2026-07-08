@@ -1,45 +1,89 @@
+import {
+  BriefcaseBusiness,
+  Code2,
+  Cpu,
+  DatabaseZap,
+  Layers3,
+  UsersRound,
+} from "lucide-react";
+
+import SectionHeader from "@/components/ui/SectionHeader";
+import GlowCard from "@/components/ui/GlowCard";
+import SectionBackground from "@/components/ui/SectionBackground";
+
 const services = [
-  "SAP consulting",
-  "Implementation support",
-  "Migration & integration",
-  "Resource augmentation",
-  "AI & automation",
-  "Enterprise application development",
+  {
+    title: "SAP Consulting",
+    description:
+      "Enterprise SAP advisory, solution architecture and digital transformation.",
+    icon: BriefcaseBusiness,
+  },
+  {
+    title: "Implementation Support",
+    description:
+      "Planning, realization, testing, deployment and hypercare support.",
+    icon: Layers3,
+  },
+  {
+    title: "Migration & Integration",
+    description:
+      "Seamless migration and integration between SAP and enterprise platforms.",
+    icon: DatabaseZap,
+  },
+  {
+    title: "Resource Augmentation",
+    description:
+      "Experienced consultants to strengthen project delivery teams.",
+    icon: UsersRound,
+  },
+  {
+    title: "AI & Automation",
+    description:
+      "AI-powered business automation and intelligent enterprise workflows.",
+    icon: Cpu,
+  },
+  {
+    title: "Enterprise Development",
+    description:
+      "Custom enterprise applications tailored around business processes.",
+    icon: Code2,
+  },
 ];
 
 export default function Consulting() {
   return (
-    <section className="relative overflow-hidden bg-[#050816] px-6 py-32 text-white">
-      <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-        <div>
-          <p className="mb-6 text-sm font-semibold uppercase tracking-[0.4em] text-cyan-300">
-            Consulting
-          </p>
+    <section id="consulting" className="relative overflow-hidden bg-[#050816] py-40">
+      <SectionBackground word="CONSULTING" />
 
-          <h2 className="text-balance text-4xl font-bold leading-tight md:text-6xl lg:text-7xl">
-            From learning outcomes to enterprise outcomes.
-          </h2>
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
+        <SectionHeader
+          eyebrow="CONSULTING"
+          title="From learning outcomes to enterprise outcomes."
+          description="Archon supports organizations through SAP consulting, software engineering, AI, integrations and technology transformation."
+        />
 
-          <p className="mt-8 max-w-xl text-lg leading-8 text-slate-300">
-            Archon supports businesses with SAP consulting, software
-            development, integration, staffing, and technology transformation
-            across global markets.
-          </p>
-        </div>
+        <div className="mt-20 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          {services.map((service, index) => {
+            const Icon = service.icon;
 
-        <div className="relative rounded-[2.5rem] border border-white/10 bg-white/[0.03] p-8 backdrop-blur-md">
-          <div className="absolute inset-0 rounded-[2.5rem] bg-cyan-300/5 blur-2xl" />
+            return (
+              <GlowCard key={service.title} delay={index * 0.08}>
+                <Icon className="mb-8 h-10 w-10 text-cyan-300 transition duration-300 group-hover:scale-110" />
 
-          <div className="relative grid gap-4 sm:grid-cols-2">
-            {services.map((service) => (
-              <div
-                key={service}
-                className="rounded-2xl border border-white/10 bg-[#07111f]/80 p-5 text-slate-200"
-              >
-                {service}
-              </div>
-            ))}
-          </div>
+                <h3 className="text-2xl font-semibold text-white">
+                  {service.title}
+                </h3>
+
+                <p className="mt-5 leading-7 text-slate-300">
+                  {service.description}
+                </p>
+
+                <div className="mt-auto pt-10 text-sm font-semibold tracking-wide text-cyan-300">
+                  Explore capability →
+                </div>
+              </GlowCard>
+            );
+          })}
         </div>
       </div>
     </section>

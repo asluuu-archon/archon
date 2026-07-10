@@ -1,45 +1,56 @@
+import { Quote } from "lucide-react";
+
+import CinematicSection from "@/components/ui/CinematicSection";
+import GlowCard from "@/components/ui/GlowCard";
 import SectionBackground from "@/components/ui/SectionBackground";
 import SectionHeader from "@/components/ui/SectionHeader";
-import GlowCard from "@/components/ui/GlowCard";
+
+const founderLines = [
+  "I was not a topper.",
+  "I studied mainly to pass exams.",
+  "After college, I realised marks did not teach me how the real industry works.",
+  "That struggle became the reason Archon exists.",
+];
 
 const beliefs = [
-  "Average marks should not define someone's future.",
-  "Technology should be learned through business problems.",
+  "Average marks should not define someone’s future.",
+  "Technology should be learned through real business problems.",
   "Certificates matter less than real understanding.",
   "Students should dream first, then build the skill to reach there.",
 ];
 
 export default function FounderStory() {
   return (
-    <section id="founder" className="relative overflow-hidden bg-[#050816] py-40">
+    <CinematicSection id="founder" glow="left">
       <SectionBackground word="FOUNDER" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         <SectionHeader
           eyebrow="FOUNDER STORY"
           title={"I was not a topper.\nThat became the reason Archon exists."}
-          description="Archon was built from the belief that students need more than certificates. They need basics, business understanding, mentorship, confidence and real-world exposure."
+          description="Archon was built from a deeply personal realization: students need more than marks, certificates and theory. They need basics, business understanding, mentorship, confidence and real-world exposure."
         />
 
-        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <GlowCard className="min-h-[520px]">
-            <div className="flex h-full flex-col justify-between">
-              <div>
-                <p className="text-sm uppercase tracking-[0.35em] text-cyan-300">
-                  Mohamed Aslam
+        <div className="mt-20 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+          <GlowCard className="min-h-[560px]">
+            <Quote className="mb-10 h-12 w-12 text-cyan-300/70" />
+
+            <div className="space-y-7">
+              {founderLines.map((line) => (
+                <p
+                  key={line}
+                  className="text-3xl font-semibold leading-tight text-white md:text-4xl"
+                >
+                  {line}
                 </p>
+              ))}
+            </div>
 
-                <h3 className="mt-6 text-4xl font-semibold leading-tight text-white md:text-5xl">
-                  From one room in Kerala to a global technology ecosystem.
-                </h3>
+            <div className="mt-auto pt-12">
+              <div className="text-sm uppercase tracking-[0.35em] text-cyan-300">
+                Mohamed Aslam
               </div>
-
-              <p className="mt-10 text-lg leading-8 text-slate-300">
-                Archon started with one founder, one room and one belief:
-                learning should prepare people for real industry, not just
-                exams. That belief has now shaped thousands of learners,
-                consulting journeys, global offices and new technology products.
-              </p>
+              <div className="mt-3 text-slate-400">Founder, Archon</div>
             </div>
           </GlowCard>
 
@@ -48,7 +59,7 @@ export default function FounderStory() {
               <GlowCard
                 key={belief}
                 delay={index * 0.08}
-                className="min-h-[120px]"
+                className="min-h-[130px]"
               >
                 <div className="flex items-start gap-5">
                   <div className="text-sm font-semibold tracking-[0.3em] text-cyan-300">
@@ -64,6 +75,6 @@ export default function FounderStory() {
           </div>
         </div>
       </div>
-    </section>
+    </CinematicSection>
   );
 }

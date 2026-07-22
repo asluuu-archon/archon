@@ -24,7 +24,12 @@ type SceneContextValue = {
   setScene: (scene: SceneName) => void;
 };
 
-const SceneContext = createContext<SceneContextValue | null>(null);
+const defaultSceneContext: SceneContextValue = {
+  scene: "hero",
+  setScene: () => undefined,
+};
+
+const SceneContext = createContext<SceneContextValue>(defaultSceneContext);
 
 type SceneProviderProps = {
   children: ReactNode;
@@ -49,11 +54,5 @@ export function SceneProvider({ children }: SceneProviderProps) {
 }
 
 export function useScene() {
-  const context = useContext(SceneContext);
-
-  if (!context) {
-    throw new Error("useScene must be used inside SceneProvider");
-  }
-
-  return context;
+  return useContext(SceneContext);
 }

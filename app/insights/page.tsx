@@ -1,89 +1,136 @@
-import { safeSanityFetch } from "@/lib/sanity.safe";
-import { INSIGHTS_QUERY } from "@/lib/sanity.queries";
-import { Insight } from "@/lib/sanity.types";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import { ArrowUpRight, BookOpenText } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Insights | Archon",
-  description: "Thought leadership and insights from the Archon ecosystem.",
+import { sanityClient } from "@/sanity/client";
+import { allInsightsQuery } from "@/sanity/queries";
+import type { Insight } from "@/sanity/types";
+
+export const metadata: Metadata = {
+  title: "Archon Insights | Technology, Careers and Innovation",
+  description:
+    "Explore practical insights from Archon covering SAP, AI, software engineering, careers, consulting, cloud and innovation.",
 };
+
+export const revalidate = 60;
+
+const categoryLabels: Record<string, string> = {
+  "sap-erp": "SAP & ERP",
+  "ai-automation": "AI & Automation",
+  "software-engineering": "Software Engineering",
+  "cloud-devops": "Cloud & DevOps",
+  "data-analytics": "Data & Analytics",
+  cybersecurity: "Cybersecurity",
+  careers: "Careers",
+  consulting: "Consulting",
+  "founder-notes": "Founder Notes",
+  "learner-stories": "Learner Stories",
+  "company-updates": "Company Updates",
+};
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(value));
+}
 
 export default async function InsightsPage() {
   let insights: Insight[] = [];
 
-  insights = await safeSanityFetch<Insight[]>({
-    query: INSIGHTS_QUERY,
-    tags: ["insights"],
-    defaultValue: [],
-  });
+  try {
+    insights = await sanityClient.fetch<Insight[]>(
+      allInsightsQuery,
+      {},
+      {
+        next: {
+          revalidate: 60,
+          tags: ["insights"],
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Unable to load Insights:", error);
+  }
 
   return (
-    <main className="relative min-h-screen bg-[#050816] text-white">
-      <Navbar />
-
-      <div className="relative z-10 pt-32 pb-20">
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-12">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4">Insights</h1>
-            <p className="text-lg text-slate-300">
-              Thought leadership, technical deep dives, and perspectives on enterprise technology, AI, and career growth.
-            </p>
+    <main className="min-h-screen bg-[#050816] px-6 pb-28 pt-32 text-white">
+      <div className="mx-auto max-w-[1450px]">
+        <div className="max-w-4xl">
+          <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.34em] text-cyan-300">
+            <BookOpenText className="h-4 w-4" />
+            Archon Insights
           </div>
 
-          {insights.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {insights.map((insight) => (
-                <Link
-                  key={insight._id}
-                  href={`/insights/${insight.slug.current}`}
-                  className="group"
-                >
-                  <div className="bg-slate-900 rounded-lg overflow-hidden hover:bg-slate-800 transition-colors">
-                    {insight.featuredImage && (
-                      <div className="w-full h-48 bg-slate-800 overflow-hidden">
-                        <img
-                          src={`https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/${insight.featuredImage.asset._ref.replace("image-", "").replace("-png", ".png").replace("-jpg", ".jpg")}`}
-                          alt={insight.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      </div>
-                    )}
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-semibold text-cyan-400 uppercase">
-                          {insight.category}
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          {new Date(insight.publishedDate).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <h3 className="text-lg font-bold mb-2 group-hover:text-cyan-400 transition-colors">
-                        {insight.title}
-                      </h3>
-                      <p className="text-sm text-slate-400 line-clamp-3">
-                        {insight.excerpt}
-                      </p>
-                      <div className="mt-4 pt-4 border-t border-slate-700">
-                        <p className="text-xs text-slate-500">By {insight.author}</p>
-                      </div>
+          <h1 className="mt-8 text-6xl font-bold leading-[0.98] md:text-8xl">
+            Learn.
+            <br />
+            Question.
+            <br />
+            <span className="text-cyan-300">Build better.</span>
+          </h1>
+
+          <p className="mt-8 max-w-2xl text-lg leading-8 text-slate-400">
+            Practical thinking from across Archon’s learning,
+            consulting, product and global technology ecosystem.
+          </p>
+        </div>
+
+        {insights.length === 0 ? (
+          <section className="mt-20 rounded-[2.5rem] border border-white/10 bg-white/[0.025] p-10">
+            <div className="text-[10px] uppercase tracking-[0.3em] text-cyan-300">
+              Knowledge platform coming online
+            </div>
+
+            <h2 className="mt-5 text-3xl font-semibold">
+              The first Archon Insights article is being prepared.
+            </h2>
+
+            <p className="mt-4 max-w-2xl leading-7 text-slate-400">
+              Articles published through the Archon CMS will appear
+              here automatically.
+            </p>
+          </section>
+        ) : (
+          <section className="mt-20 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {insights.map((insight) => (
+              <Link
+                key={insight._id}
+                href={`/insights/${insight.slug}`}
+                className="group flex min-h-[390px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.025] p-6 transition duration-500 hover:-translate-y-2 hover:border-cyan-300/30 hover:bg-white/[0.05]"
+              >
+                <div className="text-[9px] font-semibold uppercase tracking-[0.24em] text-cyan-300">
+                  {categoryLabels[insight.category] ??
+                    insight.category}
+                </div>
+
+                <h2 className="mt-8 text-2xl font-semibold leading-tight">
+                  {insight.title}
+                </h2>
+
+                <p className="mt-5 line-clamp-4 text-sm leading-7 text-slate-400">
+                  {insight.excerpt}
+                </p>
+
+                <div className="mt-auto flex items-center justify-between gap-4 border-t border-white/10 pt-5">
+                  <div>
+                    <div className="text-xs text-white">
+                      {insight.authorName ?? "Archon"}
+                    </div>
+
+                    <div className="mt-1 text-[9px] uppercase tracking-[0.18em] text-slate-600">
+                      {formatDate(insight.publishedAt)}
                     </div>
                   </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-slate-400">
-                No insights published yet. Check back soon!
-              </p>
-            </div>
-          )}
-        </section>
-      </div>
 
-      <Footer />
+                  <ArrowUpRight className="h-4 w-4 text-slate-600 transition group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-cyan-300" />
+                </div>
+              </Link>
+            ))}
+          </section>
+        )}
+      </div>
     </main>
   );
 }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SceneProvider } from "@/components/providers/SceneProvider";
 import { ScrollProvider } from "@/components/providers/ScrollProvider";
 import "./globals.css";
 
@@ -31,9 +30,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <SceneProvider>
-          <ScrollProvider>{children}</ScrollProvider>
-        </SceneProvider>
+        <ScrollProvider>{children}</ScrollProvider>
       </body>
     </html>
   );

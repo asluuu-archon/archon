@@ -1,47 +1,137 @@
 "use client";
 
 import { useEffect } from "react";
-import { useScene } from "@/components/providers/SceneProvider";
 
-const sceneMap: Record<string, Parameters<ReturnType<typeof useScene>["setScene"]>[0]> = {
-  home: "hero",
-  why: "problem",
-  learning: "learning",
-  consulting: "consulting",
-  products: "products",
-  stories: "stories",
-  global: "global",
-  campus: "campus",
-  contact: "vision",
+import {
+  SceneName,
+  useScene,
+} from "@/components/providers/SceneProvider";
+
+type SceneSection = {
+  id: string;
+  scene: SceneName;
 };
+
+const sceneSections: SceneSection[] = [
+  {
+    id: "hero",
+    scene: "hero",
+  },
+  {
+    id: "problem",
+    scene: "problem",
+  },
+  {
+    id: "founder",
+    scene: "problem",
+  },
+  {
+    id: "journey",
+    scene: "global",
+  },
+  {
+    id: "global",
+    scene: "global",
+  },
+  {
+    id: "learning",
+    scene: "learning",
+  },
+  {
+    id: "consulting",
+    scene: "consulting",
+  },
+  {
+    id: "products",
+    scene: "products",
+  },
+  {
+    id: "innovation",
+    scene: "products",
+  },
+  {
+    id: "stories",
+    scene: "stories",
+  },
+  {
+    id: "campus",
+    scene: "campus",
+  },
+  {
+    id: "contact",
+    scene: "vision",
+  },
+];
 
 export default function SceneWatcher() {
   const { setScene } = useScene();
 
   useEffect(() => {
-    const sections = document.querySelectorAll("section[id]");
+    let animationFrame = 0;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((entry) => entry.isIntersecting);
+    const updateScene = () => {
+      const viewportFocus = window.innerHeight * 0.46;
 
-        if (!visible) return;
+      let nearestScene: SceneName = "hero";
+      let nearestDistance = Number.POSITIVE_INFINITY;
 
-        const id = visible.target.id;
-        const scene = sceneMap[id];
+      for (const section of sceneSections) {
+        const element = document.getElementById(section.id);
 
-        if (scene) {
-          setScene(scene);
+        if (!element) {
+          continue;
         }
-      },
-      {
-        threshold: 0.35,
+
+        const rect = element.getBoundingClientRect();
+
+        const sectionVisible =
+          rect.bottom > 0 && rect.top < window.innerHeight;
+
+        if (!sectionVisible) {
+          continue;
+        }
+
+        const sectionCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(sectionCenter - viewportFocus);
+
+        const focusInsideSection =
+          rect.top <= viewportFocus &&
+          rect.bottom >= viewportFocus;
+
+        if (focusInsideSection) {
+          nearestScene = section.scene;
+          nearestDistance = -1;
+          break;
+        }
+
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestScene = section.scene;
+        }
       }
-    );
 
-    sections.forEach((section) => observer.observe(section));
+      setScene(nearestScene);
+    };
 
-    return () => observer.disconnect();
+    const requestUpdate = () => {
+      window.cancelAnimationFrame(animationFrame);
+
+      animationFrame = window.requestAnimationFrame(updateScene);
+    };
+
+    updateScene();
+
+    window.addEventListener("scroll", requestUpdate, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", requestUpdate);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
   }, [setScene]);
 
   return null;

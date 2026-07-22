@@ -1,16 +1,20 @@
-import { BarChart3, BrainCircuit, CloudCog, Code2 } from "lucide-react";
+import {
+  BarChart3,
+  BrainCircuit,
+  CloudCog,
+  Code2,
+} from "lucide-react";
 
-import CinematicSection from "@/components/ui/CinematicSection";
+import { programs } from "@/data/home";
 import GlowCard from "@/components/ui/GlowCard";
 import SectionBackground from "@/components/ui/SectionBackground";
 import SectionHeader from "@/components/ui/SectionHeader";
-import { programs } from "@/data/home";
 
 const icons = [BrainCircuit, Code2, BarChart3, CloudCog];
 
 export default function Programs() {
   return (
-    <CinematicSection id="learning" glow="right">
+    <section id="learning" className="relative overflow-hidden bg-[#050816] py-40">
       <SectionBackground word="LEARNING" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
@@ -26,8 +30,8 @@ export default function Programs() {
 
             return (
               <GlowCard key={program.title} delay={index * 0.08}>
-                <div className="mb-8 flex items-center justify-between gap-6">
-                  <Icon className="h-10 w-10 shrink-0 text-cyan-300 transition duration-300 group-hover:scale-110" />
+                <div className="mb-8 flex items-center justify-between">
+                  <Icon className="h-10 w-10 text-cyan-300 transition duration-300 group-hover:scale-110" />
 
                   <div className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-xs uppercase tracking-[0.25em] text-cyan-300">
                     {program.label}
@@ -50,6 +54,6 @@ export default function Programs() {
           })}
         </div>
       </div>
-    </CinematicSection>
+    </section>
   );
 }

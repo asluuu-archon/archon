@@ -2,12 +2,13 @@
 
 import {
   createContext,
+  ReactNode,
   useContext,
   useMemo,
   useState,
 } from "react";
 
-type SceneName =
+export type SceneName =
   | "hero"
   | "problem"
   | "learning"
@@ -18,20 +19,19 @@ type SceneName =
   | "campus"
   | "vision";
 
-type SceneContextType = {
+type SceneContextValue = {
   scene: SceneName;
   setScene: (scene: SceneName) => void;
 };
 
-const SceneContext = createContext<SceneContextType | null>(null);
+const SceneContext = createContext<SceneContextValue | null>(null);
 
-export function SceneProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [scene, setScene] =
-    useState<SceneName>("hero");
+type SceneProviderProps = {
+  children: ReactNode;
+};
+
+export function SceneProvider({ children }: SceneProviderProps) {
+  const [scene, setScene] = useState<SceneName>("hero");
 
   const value = useMemo(
     () => ({
@@ -52,9 +52,7 @@ export function useScene() {
   const context = useContext(SceneContext);
 
   if (!context) {
-    throw new Error(
-      "useScene must be used inside SceneProvider"
-    );
+    throw new Error("useScene must be used inside SceneProvider");
   }
 
   return context;

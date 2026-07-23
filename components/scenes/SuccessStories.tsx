@@ -12,15 +12,15 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { successStories } from "@/data/home";
 import CinematicSection from "@/components/ui/CinematicSection";
 import HolographicField from "@/components/effects/HolographicField";
 import SectionBackground from "@/components/ui/SectionBackground";
 import SectionHeader from "@/components/ui/SectionHeader";
+import { HomepageJourney } from "@/lib/sanity.types";
 
 const icons = [GraduationCap, TrendingUp, Globe2];
 
-const journeys = [
+const journeys_backup = [
   {
     id: "learner",
     eyebrow: "Learner Transformation",
@@ -77,16 +77,12 @@ const journeys = [
   },
 ];
 
-export default function SuccessStories() {
+export default function SuccessStories({ journeys }: { journeys: HomepageJourney[] }) {
+  const activeJourneys = journeys?.length > 0 ? journeys : journeys_backup as any;
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const activeJourney = journeys[activeIndex];
+  const activeJourney = activeJourneys[activeIndex] ?? activeJourneys[0];
   const ActiveIcon = icons[activeIndex] ?? Sparkles;
-
-  const activeStat = useMemo(
-    () => successStories[activeIndex] ?? successStories[0],
-    [activeIndex]
-  );
 
   return (
     <CinematicSection id="stories" glow="center">
@@ -104,13 +100,13 @@ export default function SuccessStories() {
 
         <div className="mt-16 grid gap-6 xl:grid-cols-[0.7fr_1.3fr]">
           <div className="space-y-4">
-            {successStories.map((story, index) => {
+            {activeJourneys.map((journey: any, index: number) => {
               const Icon = icons[index] ?? Sparkles;
               const active = activeIndex === index;
 
               return (
                 <motion.button
-                  key={story.title}
+                  key={journey.title}
                   type="button"
                   onClick={() => setActiveIndex(index)}
                   whileHover={{ x: 6 }}
@@ -134,11 +130,11 @@ export default function SuccessStories() {
 
                       <div>
                         <div className="text-3xl font-black text-cyan-300">
-                          {story.number}
+                          {journey.highlight}
                         </div>
 
                         <div className="mt-1 font-semibold text-white">
-                          {story.title}
+                          {journey.highlightLabel}
                         </div>
                       </div>
                     </div>
@@ -153,7 +149,7 @@ export default function SuccessStories() {
                   </div>
 
                   <p className="mt-5 text-sm leading-6 text-slate-400">
-                    {story.text}
+                    {journey.description}
                   </p>
                 </motion.button>
               );
@@ -245,7 +241,7 @@ export default function SuccessStories() {
                         />
 
                         <div className="space-y-5">
-                          {activeJourney.steps.map((step, index) => (
+                          {activeJourney.steps.map((step: string, index: number) => (
                             <motion.div
                               key={step}
                               initial={{ opacity: 0, x: 22 }}
@@ -291,7 +287,7 @@ export default function SuccessStories() {
                 <div className="mt-8 grid gap-4 sm:grid-cols-3">
                   <div className="rounded-[1.7rem] border border-white/10 bg-white/[0.025] p-6">
                     <div className="text-3xl font-black text-cyan-300">
-                      {activeStat.number}
+                      {activeJourney.highlight}
                     </div>
 
                     <div className="mt-2 text-[10px] uppercase tracking-[0.23em] text-slate-500">

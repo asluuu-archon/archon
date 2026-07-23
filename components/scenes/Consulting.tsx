@@ -26,8 +26,11 @@ import HolographicField from "@/components/effects/HolographicField";
 import SectionBackground from "@/components/ui/SectionBackground";
 import SectionHeader from "@/components/ui/SectionHeader";
 import SAPIndependenceDisclosure from "@/components/ui/SAPIndependenceDisclosure";
+import { ConsultingService } from "@/lib/sanity.types";
 
-const capabilities = [
+const icons = [BriefcaseBusiness, DatabaseZap, Code2, Users, Bot, CloudCog];
+
+const capabilities_backup = [
   {
     id: "sap",
     title: "SAP Consulting",
@@ -199,18 +202,20 @@ const operatingRegions = [
   { label: "Sydney", x: "80%", y: "68%" },
 ];
 
-export default function Consulting() {
-  const [activeId, setActiveId] = useState(capabilities[0].id);
+export default function Consulting({ services }: { services: ConsultingService[] }) {
+  const capabilities = services?.length > 0 ? services : capabilities_backup as any;
+  const [activeId, setActiveId] = useState(capabilities[0]?._id || capabilities[0]?.id);
   const [activityIndex, setActivityIndex] = useState(0);
 
   const activeCapability = useMemo(
     () =>
-      capabilities.find((capability) => capability.id === activeId) ??
+      capabilities.find((capability: any) => (capability._id || capability.id) === activeId) ??
       capabilities[0],
-    [activeId]
+    [activeId, capabilities]
   );
 
-  const ActiveIcon = activeCapability.icon;
+  const activeIndex = capabilities.findIndex((c: any) => (c._id || c.id) === activeId);
+  const ActiveIcon = icons[activeIndex] ?? BriefcaseBusiness;
 
   useEffect(() => {
     setActivityIndex(0);
@@ -239,15 +244,16 @@ export default function Consulting() {
 
         <div className="mt-16 grid gap-6 xl:grid-cols-[0.76fr_1.24fr]">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-            {capabilities.map((capability) => {
-              const Icon = capability.icon;
-              const active = capability.id === activeId;
+            {capabilities.map((capability: any, index: number) => {
+              const Icon = icons[index] ?? BriefcaseBusiness;
+              const id = capability._id || capability.id;
+              const active = id === activeId;
 
               return (
                 <button
-                  key={capability.id}
+                  key={id}
                   type="button"
-                  onClick={() => setActiveId(capability.id)}
+                  onClick={() => setActiveId(id)}
                   className={`group rounded-[1.7rem] border p-5 text-left transition-all duration-300 ${
                     active
                       ? "border-cyan-300/45 bg-cyan-300/[0.09] shadow-[0_0_45px_rgba(34,211,238,0.1)]"
@@ -341,7 +347,7 @@ export default function Consulting() {
                     </p>
 
                     <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                      {activeCapability.services.map((service) => (
+                      {activeCapability.services.map((service: string) => (
                         <div
                           key={service}
                           className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.025] px-4 py-4"
@@ -469,10 +475,10 @@ export default function Consulting() {
                   </div>
                 </div>
 
-                <div className="mt-8 grid gap-4 sm:grid-cols-3">
-                  {activeCapability.metrics.map((metric) => (
-                    <div
-                      key={metric.label}
+                    <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                      {activeCapability.metrics.map((metric: { label: string, value: string }) => (
+                        <div
+                          key={metric.label}
                       className="rounded-[1.6rem] border border-white/10 bg-white/[0.025] p-5"
                     >
                       <div className="text-2xl font-black text-cyan-300">
@@ -514,7 +520,9 @@ export default function Consulting() {
                         className="mt-5 flex items-center gap-3 text-cyan-100"
                       >
                         <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-300" />
-                        {activeCapability.activity[activityIndex]}
+                        <span className="text-sm font-mono tracking-wide">
+                          {activeCapability.activity[activityIndex]}
+                        </span>
                       </motion.div>
                     </AnimatePresence>
                   </div>

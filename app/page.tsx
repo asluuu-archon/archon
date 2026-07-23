@@ -30,8 +30,34 @@ import TrustedEcosystem from "@/components/scenes/TrustedEcosystem";
 import WhyArchon from "@/components/scenes/WhyArchon";
 import CommandCenter from "@/components/command/CommandCenter";
 import InsightsPreview from "@/components/scenes/InsightsPreview";
+import { sanityFetch } from "@/lib/sanity.client";
+import { 
+  PROGRAMS_QUERY,
+  CONSULTING_SERVICES_QUERY,
+  HOMEPAGE_JOURNEYS_QUERY
+} from "@/lib/sanity.queries";
+import { 
+  Program,
+  ConsultingService,
+  HomepageJourney
+} from "@/lib/sanity.types";
 
-export default function Home() {
+export default async function Home() {
+  const programs = await sanityFetch<Program[]>({
+    query: PROGRAMS_QUERY,
+    tags: ["program"],
+  });
+
+  const consultingServices = await sanityFetch<ConsultingService[]>({
+    query: CONSULTING_SERVICES_QUERY,
+    tags: ["consultingService"],
+  });
+
+  const homepageJourneys = await sanityFetch<HomepageJourney[]>({
+    query: HOMEPAGE_JOURNEYS_QUERY,
+    tags: ["homepageJourney"],
+  });
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#050816] text-white">
       <ArchonLoader />
@@ -107,7 +133,7 @@ export default function Home() {
           variant="learning"
         />
 
-        <Programs />
+        <Programs programs={programs || []} />
 
         <SceneBridge
           from="Learning"
@@ -116,7 +142,7 @@ export default function Home() {
           variant="industry"
         />
 
-        <Consulting />
+        <Consulting services={consultingServices || []} />
 
         <SceneBridge
           from="Consulting"
@@ -143,7 +169,7 @@ export default function Home() {
           variant="vision"
         />
 
-        <SuccessStories />
+        <SuccessStories journeys={homepageJourneys || []} />
 
         <SceneBridge
           from="Impact"

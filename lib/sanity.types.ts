@@ -90,17 +90,47 @@ export interface Program {
   slug: {
     current: string;
   };
-  description: string;
   label: string;
-  featuredImage?: {
-    asset: {
-      _ref: string;
-      _type: "reference";
-    };
-  };
-  content?: any; // Portable Text
-  seoTitle?: string;
-  seoDescription?: string;
+  description: string;
+  pathwayEyebrow: string;
+  outcome: string;
+  duration: string;
+  audience: string;
+  stages: {
+    title: string;
+    text: string;
+  }[];
+  displayOrder: number;
+}
+
+export interface ConsultingService {
+  _id: string;
+  _type: "consultingService";
+  title: string;
+  shortTitle: string;
+  eyebrow: string;
+  status: string;
+  description: string;
+  services: string[];
+  metrics: {
+    value: string;
+    label: string;
+  }[];
+  activity: string[];
+  displayOrder: number;
+}
+
+export interface HomepageJourney {
+  _id: string;
+  _type: "homepageJourney";
+  title: string;
+  eyebrow: string;
+  description: string;
+  status: string;
+  highlight: string;
+  highlightLabel: string;
+  destination: string;
+  steps: string[];
   displayOrder: number;
 }
 

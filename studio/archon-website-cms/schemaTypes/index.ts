@@ -4,6 +4,9 @@ import {organisation} from './organisation'
 import {product} from './product'
 import {siteSettings} from './siteSettings'
 import {successStory} from './successStory'
+import {program} from './program'
+import {consultingService} from './consultingService'
+import {homepageJourney} from './homepageJourney'
 
 export const schemaTypes = [
   siteSettings,
@@ -12,4 +15,7 @@ export const schemaTypes = [
   organisation,
   product,
   jobOpening,
+  program,
+  consultingService,
+  homepageJourney,
 ]

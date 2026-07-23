@@ -17,7 +17,7 @@ import {
   Users,
 } from "lucide-react";
 
-import { programs } from "@/data/home";
+
 import CinematicSection from "@/components/ui/CinematicSection";
 import CircuitGrid from "@/components/effects/CircuitGrid";
 import HolographicField from "@/components/effects/HolographicField";
@@ -142,7 +142,10 @@ const pathwayData = [
   },
 ];
 
-export default function Programs() {
+import { Program } from "@/lib/sanity.types";
+
+export default function Programs({ programs }: { programs?: Program[] }) {
+  if (!programs || programs.length === 0) return null;
   const [activeIndex, setActiveIndex] = useState(0);
 
   const activeProgram = programs[activeIndex] ?? programs[0];
@@ -369,7 +372,7 @@ export default function Programs() {
                         />
 
                         <div className="space-y-4">
-                          {activePathway.stages.map((stage, index) => (
+                          {activeProgram.stages?.map((stage, index) => (
                             <motion.div
                               key={stage.title}
                               initial={{ opacity: 0, x: 22 }}
@@ -412,7 +415,7 @@ export default function Programs() {
                             </div>
 
                             <div className="mt-2 font-semibold text-white">
-                              {activePathway.duration}
+                              {activeProgram.duration}
                             </div>
                           </div>
                         </div>

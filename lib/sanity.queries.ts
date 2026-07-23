@@ -97,12 +97,43 @@ export const PROGRAMS_QUERY = `
     _id,
     title,
     slug,
-    description,
     label,
-    featuredImage,
-    content,
-    seoTitle,
-    seoDescription,
+    description,
+    pathwayEyebrow,
+    outcome,
+    duration,
+    audience,
+    stages,
+    displayOrder
+  }
+`;
+
+export const CONSULTING_SERVICES_QUERY = `
+  *[_type == "consultingService"] | order(displayOrder asc) {
+    _id,
+    title,
+    shortTitle,
+    eyebrow,
+    status,
+    description,
+    services,
+    metrics,
+    activity,
+    displayOrder
+  }
+`;
+
+export const HOMEPAGE_JOURNEYS_QUERY = `
+  *[_type == "homepageJourney"] | order(displayOrder asc) {
+    _id,
+    title,
+    eyebrow,
+    description,
+    status,
+    highlight,
+    highlightLabel,
+    destination,
+    steps,
     displayOrder
   }
 `;

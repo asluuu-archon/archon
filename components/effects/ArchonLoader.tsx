@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const stages = [
@@ -13,58 +13,81 @@ const stages = [
 
 export default function ArchonLoader() {
   const [visible, setVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [stageIndex, setStageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     const alreadyViewed = window.sessionStorage.getItem(
       "archon-loader-viewed"
     );
 
-    if (alreadyViewed) {
+    if (alreadyViewed || prefersReducedMotion) {
+      if (prefersReducedMotion) {
+        window.sessionStorage.setItem("archon-loader-viewed", "true");
+      }
       return;
     }
 
-    setVisible(true);
-    document.body.style.overflow = "hidden";
+    const duration = 2200;
+    let progressTimer: number | undefined;
+    let closeTimer: number | undefined;
+    let dismissTimer: number | undefined;
 
-    const startTime = Date.now();
-    const duration = 3200;
+    const startTimer = window.setTimeout(() => {
+      setVisible(true);
+      setIsClosing(false);
+      document.body.style.overflow = "hidden";
 
-    const progressTimer = window.setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const nextProgress = Math.min(
-        100,
-        Math.round((elapsed / duration) * 100)
-      );
+      const startTime = Date.now();
+      progressTimer = window.setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const nextProgress = Math.min(
+          100,
+          Math.round((elapsed / duration) * 100)
+        );
 
-      setProgress(nextProgress);
+        setProgress(nextProgress);
 
-      const nextStage = Math.min(
-        stages.length - 1,
-        Math.floor((nextProgress / 100) * stages.length)
-      );
+        const nextStage = Math.min(
+          stages.length - 1,
+          Math.floor((nextProgress / 100) * stages.length)
+        );
 
-      setStageIndex(nextStage);
-    }, 40);
+        setStageIndex(nextStage);
+      }, 40);
 
-    const closeTimer = window.setTimeout(() => {
-      setProgress(100);
-      setStageIndex(stages.length - 1);
+      closeTimer = window.setTimeout(() => {
+        if (progressTimer !== undefined) {
+          window.clearInterval(progressTimer);
+        }
+        setProgress(100);
+        setStageIndex(stages.length - 1);
+        setIsClosing(true);
 
-      window.setTimeout(() => {
-        setVisible(false);
-        document.body.style.overflow = "";
-        window.sessionStorage.setItem("archon-loader-viewed", "true");
-      }, 550);
-    }, duration);
+        dismissTimer = window.setTimeout(() => {
+          setVisible(false);
+          document.body.style.overflow = "";
+          window.sessionStorage.setItem("archon-loader-viewed", "true");
+        }, 220);
+      }, duration);
+    }, 0);
 
     return () => {
-      window.clearInterval(progressTimer);
-      window.clearTimeout(closeTimer);
+      window.clearTimeout(startTimer);
+      if (progressTimer !== undefined) {
+        window.clearInterval(progressTimer);
+      }
+      if (closeTimer !== undefined) {
+        window.clearTimeout(closeTimer);
+      }
+      if (dismissTimer !== undefined) {
+        window.clearTimeout(dismissTimer);
+      }
       document.body.style.overflow = "";
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   return (
     <AnimatePresence>
@@ -76,9 +99,11 @@ export default function ArchonLoader() {
             filter: "blur(14px)",
           }}
           transition={{
-            duration: 0.65,
+            duration: 0.45,
             ease: [0.22, 1, 0.36, 1],
           }}
+          role="status"
+          aria-label="Loading the Archon experience"
           className="fixed inset-0 z-[500] flex items-center justify-center overflow-hidden bg-[#020611]"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.12),transparent_45%)]" />
@@ -103,7 +128,15 @@ export default function ArchonLoader() {
             className="absolute h-[380px] w-[380px] rounded-full border border-cyan-300/[0.08]"
           />
 
-          <div className="relative z-10 w-full max-w-xl px-8 text-center">
+          <motion.div
+            animate={
+              isClosing
+                ? { opacity: 0, y: -12, scale: 0.98, filter: "blur(6px)" }
+                : { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }
+            }
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative z-10 w-full max-w-xl px-8 text-center"
+          >
             <motion.div
               initial={{
                 opacity: 0,
@@ -214,7 +247,7 @@ export default function ArchonLoader() {
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           <div className="absolute bottom-10 text-[8px] uppercase tracking-[0.35em] text-slate-700">
             Archon technology ecosystem

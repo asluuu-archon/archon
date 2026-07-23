@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -20,7 +20,11 @@ import { HomepageJourney } from "@/lib/sanity.types";
 
 const icons = [GraduationCap, TrendingUp, Globe2];
 
-const journeys_backup = [
+type ImpactJourney = Omit<HomepageJourney, "_id" | "_type" | "displayOrder"> & {
+  id: string;
+};
+
+const journeys_backup: ImpactJourney[] = [
   {
     id: "learner",
     eyebrow: "Learner Transformation",
@@ -77,12 +81,15 @@ const journeys_backup = [
   },
 ];
 
-export default function SuccessStories({ journeys }: { journeys: HomepageJourney[] }) {
-  const activeJourneys = journeys?.length > 0 ? journeys : journeys_backup as any;
+export default function SuccessStories({ journeys }: { journeys?: HomepageJourney[] }) {
+  const activeJourneys: ImpactJourney[] = journeys?.length
+    ? journeys.map(({ _id, ...journey }) => ({ ...journey, id: _id }))
+    : journeys_backup;
   const [activeIndex, setActiveIndex] = useState(0);
+  const selectedIndex = Math.min(activeIndex, activeJourneys.length - 1);
 
-  const activeJourney = activeJourneys[activeIndex] ?? activeJourneys[0];
-  const ActiveIcon = icons[activeIndex] ?? Sparkles;
+  const activeJourney = activeJourneys[selectedIndex] ?? activeJourneys[0];
+  const ActiveIcon = icons[selectedIndex] ?? Sparkles;
 
   return (
     <CinematicSection id="stories" glow="center">
@@ -100,7 +107,7 @@ export default function SuccessStories({ journeys }: { journeys: HomepageJourney
 
         <div className="mt-16 grid gap-6 xl:grid-cols-[0.7fr_1.3fr]">
           <div className="space-y-4">
-            {activeJourneys.map((journey: any, index: number) => {
+            {activeJourneys.map((journey, index) => {
               const Icon = icons[index] ?? Sparkles;
               const active = activeIndex === index;
 

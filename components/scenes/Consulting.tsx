@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
   Activity,
   Bot,
@@ -30,7 +31,20 @@ import { ConsultingService } from "@/lib/sanity.types";
 
 const icons = [BriefcaseBusiness, DatabaseZap, Code2, Users, Bot, CloudCog];
 
-const capabilities_backup = [
+type ConsultingCapability = {
+  id: string;
+  title: string;
+  shortTitle: string;
+  eyebrow: string;
+  icon?: LucideIcon;
+  status: string;
+  description: string;
+  services: string[];
+  metrics: { value: string; label: string }[];
+  activity: string[];
+};
+
+const capabilities_backup: ConsultingCapability[] = [
   {
     id: "sap",
     title: "SAP Consulting",
@@ -203,31 +217,30 @@ const operatingRegions = [
 ];
 
 export default function Consulting({ services }: { services: ConsultingService[] }) {
-  const capabilities = services?.length > 0 ? services : capabilities_backup as any;
-  const [activeId, setActiveId] = useState(capabilities[0]?._id || capabilities[0]?.id);
+  const capabilities: ConsultingCapability[] = services?.length
+    ? services.map(({ _id, ...service }) => ({ ...service, id: _id }))
+    : capabilities_backup;
+  const [activeId, setActiveId] = useState(capabilities[0]?.id ?? "");
   const [activityIndex, setActivityIndex] = useState(0);
 
   const activeCapability = useMemo(
-    () =>
-      capabilities.find((capability: any) => (capability._id || capability.id) === activeId) ??
-      capabilities[0],
+    () => capabilities.find((capability) => capability.id === activeId) ?? capabilities[0],
     [activeId, capabilities]
   );
 
-  const activeIndex = capabilities.findIndex((c: any) => (c._id || c.id) === activeId);
+  const activeIndex = capabilities.findIndex((capability) => capability.id === activeId);
   const ActiveIcon = icons[activeIndex] ?? BriefcaseBusiness;
 
   useEffect(() => {
-    setActivityIndex(0);
+    const activityCount = activeCapability.activity.length;
+    if (!activityCount) return;
 
     const interval = window.setInterval(() => {
-      setActivityIndex(
-        (current) => (current + 1) % activeCapability.activity.length
-      );
+      setActivityIndex((current) => (current + 1) % activityCount);
     }, 2100);
 
     return () => window.clearInterval(interval);
-  }, [activeCapability]);
+  }, [activeCapability.activity.length]);
 
   return (
     <CinematicSection id="consulting" glow="left">
@@ -244,16 +257,19 @@ export default function Consulting({ services }: { services: ConsultingService[]
 
         <div className="mt-16 grid gap-6 xl:grid-cols-[0.76fr_1.24fr]">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-            {capabilities.map((capability: any, index: number) => {
+            {capabilities.map((capability, index) => {
               const Icon = icons[index] ?? BriefcaseBusiness;
-              const id = capability._id || capability.id;
+              const id = capability.id;
               const active = id === activeId;
 
               return (
                 <button
                   key={id}
                   type="button"
-                  onClick={() => setActiveId(id)}
+                  onClick={() => {
+                    setActiveId(id);
+                    setActivityIndex(0);
+                  }}
                   className={`group rounded-[1.7rem] border p-5 text-left transition-all duration-300 ${
                     active
                       ? "border-cyan-300/45 bg-cyan-300/[0.09] shadow-[0_0_45px_rgba(34,211,238,0.1)]"

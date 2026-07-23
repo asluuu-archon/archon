@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   ArrowUpRight,
   BarChart3,
@@ -24,6 +24,7 @@ import HolographicField from "@/components/effects/HolographicField";
 import SectionBackground from "@/components/ui/SectionBackground";
 import SectionHeader from "@/components/ui/SectionHeader";
 import SAPIndependenceDisclosure from "@/components/ui/SAPIndependenceDisclosure";
+import { programs as fallbackProgramCards } from "@/Data/home";
 
 const icons = [BrainCircuit, Code2, BarChart3, CloudCog];
 
@@ -144,18 +145,39 @@ const pathwayData = [
 
 import { Program } from "@/lib/sanity.types";
 
+const fallbackPrograms: Program[] = pathwayData.map((pathway, index) => {
+  const card = fallbackProgramCards[index];
+
+  return {
+    _id: `fallback-program-${index + 1}`,
+    _type: "program",
+    slug: {
+      current: card.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+    },
+    title: card.title,
+    description: card.description,
+    label: card.label,
+    pathwayEyebrow: pathway.eyebrow,
+    outcome: pathway.outcome,
+    duration: pathway.duration,
+    audience: pathway.audience,
+    stages: pathway.stages,
+    displayOrder: (index + 1) * 10,
+  };
+});
+
 export default function Programs({ programs }: { programs?: Program[] }) {
-  if (!programs || programs.length === 0) return null;
+  const programList = programs?.length ? programs : fallbackPrograms;
   const [activeIndex, setActiveIndex] = useState(0);
+  const selectedIndex = Math.min(activeIndex, Math.max(programList.length - 1, 0));
+  const activeProgram = programList[selectedIndex];
+  const activePathway = pathwayData[selectedIndex] ?? pathwayData[0];
+  const ActiveIcon = icons[selectedIndex] ?? BrainCircuit;
+  const progressWidth = programList.length
+    ? `${((selectedIndex + 1) / programList.length) * 100}%`
+    : "0%";
 
-  const activeProgram = programs[activeIndex] ?? programs[0];
-  const activePathway = pathwayData[activeIndex] ?? pathwayData[0];
-  const ActiveIcon = icons[activeIndex] ?? BrainCircuit;
-
-  const progressWidth = useMemo(
-    () => `${((activeIndex + 1) / programs.length) * 100}%`,
-    [activeIndex]
-  );
+  if (!activeProgram) return null;
 
   return (
     <CinematicSection id="learning" glow="right">
@@ -172,7 +194,7 @@ export default function Programs({ programs }: { programs?: Program[] }) {
 
         <div className="mt-16 grid gap-6 xl:grid-cols-[0.72fr_1.28fr]">
           <div className="space-y-4">
-            {programs.map((program, index) => {
+            {programList.map((program, index) => {
               const Icon = icons[index] ?? BrainCircuit;
               const active = activeIndex === index;
 
@@ -234,8 +256,8 @@ export default function Programs({ programs }: { programs?: Program[] }) {
                 </div>
 
                 <div className="font-mono text-xs text-cyan-300">
-                  {String(activeIndex + 1).padStart(2, "0")} /{" "}
-                  {String(programs.length).padStart(2, "0")}
+                  {String(selectedIndex + 1).padStart(2, "0")} /{" "}
+                  {String(programList.length).padStart(2, "0")}
                 </div>
               </div>
 
@@ -288,7 +310,7 @@ export default function Programs({ programs }: { programs?: Program[] }) {
                     </div>
 
                     <div className="mt-8 text-xs uppercase tracking-[0.34em] text-cyan-300">
-                      {activePathway.eyebrow}
+                      {activeProgram.pathwayEyebrow || activePathway.eyebrow}
                     </div>
 
                     <h3 className="mt-4 text-3xl font-semibold leading-tight text-white md:text-5xl">
@@ -308,7 +330,7 @@ export default function Programs({ programs }: { programs?: Program[] }) {
                         </div>
 
                         <div className="mt-2 font-semibold text-white">
-                          {activePathway.outcome}
+                          {activeProgram.outcome || activePathway.outcome}
                         </div>
                       </div>
 
@@ -320,7 +342,7 @@ export default function Programs({ programs }: { programs?: Program[] }) {
                         </div>
 
                         <div className="mt-2 font-semibold text-white">
-                          {activePathway.audience}
+                          {activeProgram.audience || activePathway.audience}
                         </div>
                       </div>
                     </div>
@@ -415,7 +437,7 @@ export default function Programs({ programs }: { programs?: Program[] }) {
                             </div>
 
                             <div className="mt-2 font-semibold text-white">
-                              {activeProgram.duration}
+                              {activeProgram.duration || activePathway.duration}
                             </div>
                           </div>
                         </div>

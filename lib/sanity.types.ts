@@ -1,5 +1,7 @@
 // Sanity CMS Type Definitions for Archon Website
 
+import type { PortableTextBlock } from "@portabletext/react";
+
 export interface SiteSettings {
   _id: string;
   _type: "siteSettings";
@@ -15,7 +17,7 @@ export interface SiteSettings {
     label: string;
     value: string;
   }[];
-  globalSettings?: Record<string, any>;
+  globalSettings?: Record<string, unknown>;
 }
 
 export interface Organisation {
@@ -45,7 +47,7 @@ export interface Insight {
     current: string;
   };
   excerpt: string;
-  body?: any; // Portable Text
+  body?: PortableTextBlock[];
   category: string;
   author: string;
   publishedDate: string;
@@ -77,7 +79,7 @@ export interface Product {
       _type: "reference";
     };
   };
-  content?: any; // Portable Text
+  content?: PortableTextBlock[];
   seoTitle?: string;
   seoDescription?: string;
   displayOrder: number;
@@ -146,7 +148,7 @@ export interface Career {
   location: string;
   employmentType: string;
   publishedDate: string;
-  content?: any; // Portable Text
+  content?: PortableTextBlock[];
   seoTitle?: string;
   seoDescription?: string;
 }
@@ -163,7 +165,7 @@ export interface SuccessStory {
       _type: "reference";
     };
   };
-  content?: any; // Portable Text
+  content?: PortableTextBlock[];
   displayOrder: number;
 }
 

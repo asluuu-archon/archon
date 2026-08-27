@@ -1,208 +1,72 @@
-import ArchonAI from "@/components/ai/ArchonAI";
-import AIContextObserver from "@/components/ai/AIContextObserver";
-import GuidedTour from "@/components/ai/GuidedTour";
+import type { Metadata } from "next";
 
-import ArchonLoader from "@/components/effects/ArchonLoader";
-import DataParticles from "@/components/effects/DataParticles";
-import DataStreams from "@/components/effects/DataStreams";
-import InteractiveCursor from "@/components/effects/InteractiveCursor";
+import DeferredHomeTools from "@/components/effects/DeferredHomeTools";
 import PageAtmosphere from "@/components/effects/PageAtmosphere";
-import SceneBridge from "@/components/effects/SceneBridge";
-import SceneWatcher from "@/components/effects/SceneWatcher";
-
-import ChapterTimeline from "@/components/layout/ChapterTimeline";
+import StaticHomeSections from "@/components/home/StaticHomeSections";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import ScrollProgress from "@/components/layout/ScrollProgress";
-
 import Arrival from "@/components/scenes/Arrival";
-import CampusReveal from "@/components/scenes/CampusReveal";
-import Consulting from "@/components/scenes/Consulting";
-import FinalCTA from "@/components/scenes/FinalCTA";
-import GlobalPresence from "@/components/scenes/GlobalPresence";
-import InnovationLab from "@/components/scenes/InnovationLab";
-import Journey from "@/components/scenes/Journey";
-import Products from "@/components/scenes/Products";
-import Programs from "@/components/scenes/Programs";
-import StoryScroller from "@/components/scenes/StoryScroller";
-import SuccessStories from "@/components/scenes/SuccessStories";
-import TrustedEcosystem from "@/components/scenes/TrustedEcosystem";
-import WhyArchon from "@/components/scenes/WhyArchon";
-import CommandCenter from "@/components/command/CommandCenter";
-import InsightsPreview from "@/components/scenes/InsightsPreview";
 import { sanityFetch } from "@/lib/sanity.client";
-import { 
-  PROGRAMS_QUERY,
-  CONSULTING_SERVICES_QUERY,
-  HOMEPAGE_JOURNEYS_QUERY
-} from "@/lib/sanity.queries";
-import { 
-  Program,
-  ConsultingService,
-  HomepageJourney
-} from "@/lib/sanity.types";
+import { CONSULTING_SERVICES_QUERY, PROGRAMS_QUERY } from "@/lib/sanity.queries";
+import type { ConsultingService, Program } from "@/lib/sanity.types";
+import { absoluteUrl, siteUrl } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Archon Solutions | Learning, Consulting & Enterprise Innovation",
+  description:
+    "Archon Solutions connects practical learning, SAP and enterprise consulting, digital products, AI and global career growth.",
+  alternates: {
+    canonical: absoluteUrl("/"),
+  },
+  openGraph: {
+    title: "Archon Solutions | Learning, Consulting & Enterprise Innovation",
+    description:
+      "Practical learning, enterprise consulting, digital products and AI for meaningful progress.",
+    url: absoluteUrl("/"),
+  },
+};
+
+const homePageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${siteUrl}/#webpage`,
+  url: absoluteUrl("/"),
+  name: "Archon Solutions | Learning, Consulting & Enterprise Innovation",
+  description:
+    "Archon Solutions connects practical learning, SAP and enterprise consulting, digital products, AI and global career growth.",
+  about: {
+    "@id": `${siteUrl}/#organization`,
+  },
+};
 
 export default async function Home() {
-  const programs = await sanityFetch<Program[]>({
-    query: PROGRAMS_QUERY,
-    tags: ["program"],
-  });
-
-  const consultingServices = await sanityFetch<ConsultingService[]>({
-    query: CONSULTING_SERVICES_QUERY,
-    tags: ["consultingService"],
-  });
-
-  const homepageJourneys = await sanityFetch<HomepageJourney[]>({
-    query: HOMEPAGE_JOURNEYS_QUERY,
-    tags: ["homepageJourney"],
-  });
+  const [programs, consultingServices] = await Promise.all([
+    sanityFetch<Program[]>({
+      query: PROGRAMS_QUERY,
+      tags: ["program"],
+    }),
+    sanityFetch<ConsultingService[]>({
+      query: CONSULTING_SERVICES_QUERY,
+      tags: ["consultingService"],
+    }),
+  ]);
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#050816] text-white">
-      <ArchonLoader />
-
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageJsonLd) }}
+      />
       <PageAtmosphere />
-      <DataParticles />
-      <DataStreams />
-      <InteractiveCursor />
-
-      <AIContextObserver />
-      <ArchonAI />
-      <GuidedTour />
-      <CommandCenter />
-
-
-      <SceneWatcher />
       <Navbar />
-      <ChapterTimeline />
-      <ScrollProgress />
+      <DeferredHomeTools />
 
       <div className="relative z-10">
         <Arrival />
-
-        <SceneBridge
-          from="Dream"
-          to="Why Archon"
-          label="Every journey begins with a reason"
-          variant="vision"
+        <StaticHomeSections
+          programs={programs || []}
+          consultingServices={consultingServices || []}
         />
-
-        <WhyArchon />
-
-        <SceneBridge
-          from="Why Archon"
-          to="Founder Story"
-          label="The belief came from a personal journey"
-          variant="learning"
-        />
-
-        <StoryScroller />
-
-        <SceneBridge
-          from="Founder Story"
-          to="The Journey"
-          label="One room became something much larger"
-          variant="global"
-        />
-
-        <Journey />
-
-        <SceneBridge
-          from="The Journey"
-          to="Trusted Ecosystem"
-          label="Growth becomes meaningful when it is built together"
-          variant="global"
-        />
-
-        <TrustedEcosystem />
-
-        <SceneBridge
-          from="Trusted Ecosystem"
-          to="Global Presence"
-          label="Relationships created a global delivery network"
-          variant="global"
-        />
-
-        <GlobalPresence />
-
-        <SceneBridge
-          from="Global Presence"
-          to="Learning"
-          label="Global ambition begins with practical capability"
-          variant="learning"
-        />
-
-        <Programs programs={programs || []} />
-
-        <SceneBridge
-          from="Learning"
-          to="Enterprise Consulting"
-          label="Learning outcomes become enterprise outcomes"
-          variant="industry"
-        />
-
-        <Consulting services={consultingServices || []} />
-
-        <SceneBridge
-          from="Consulting"
-          to="Products"
-          label="Experience becomes technology"
-          variant="products"
-        />
-
-        <Products />
-
-        <SceneBridge
-          from="Products"
-          to="Innovation Lab"
-          label="Connected products create new possibilities"
-          variant="products"
-        />
-
-        <InnovationLab />
-
-        <SceneBridge
-          from="Innovation Lab"
-          to="Impact"
-          label="Technology matters when it changes journeys"
-          variant="vision"
-        />
-
-        <SuccessStories journeys={homepageJourneys || []} />
-
-        <SceneBridge
-          from="Impact"
-          to="Future Campus"
-          label="The next generation needs a place to build"
-          variant="campus"
-        />
-
-        <CampusReveal />
-        <SceneBridge
-  from="Future Campus"
-  to="Insights"
-  label="The ideas behind the journey deserve to be shared"
-  variant="vision"
-/>
-
-<InsightsPreview />
-
-<SceneBridge
-  from="Insights"
-  to="The Next Chapter"
-  label="Knowledge becomes meaningful when it leads to action"
-  variant="vision"
-/>
-
-        <SceneBridge
-          from="Future Campus"
-          to="The Next Chapter"
-          label="The future is still being written"
-          variant="vision"
-        />
-
-        <FinalCTA />
         <Footer />
       </div>
     </main>

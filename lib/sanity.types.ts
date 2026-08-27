@@ -138,7 +138,7 @@ export interface HomepageJourney {
 
 export interface Career {
   _id: string;
-  _type: "career";
+  _type: "career" | "jobOpening";
   title: string;
   slug: {
     current: string;
@@ -146,8 +146,14 @@ export interface Career {
   description: string;
   department: string;
   location: string;
-  employmentType: string;
-  publishedDate: string;
+  workMode?: "onsite" | "hybrid" | "remote";
+  employmentType: "full-time" | "part-time" | "contract" | "internship" | string;
+  publishedDate?: string;
+  closingDate?: string;
+  responsibilities?: string[];
+  requirements?: string[];
+  applyEmail?: string;
+  applyUrl?: string;
   content?: PortableTextBlock[];
   seoTitle?: string;
   seoDescription?: string;

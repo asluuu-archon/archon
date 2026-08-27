@@ -108,6 +108,21 @@ export const PROGRAMS_QUERY = `
   }
 `;
 
+export const PROGRAM_BY_SLUG_QUERY = `
+  *[_type == "program" && slug.current == $slug][0] {
+    _id,
+    title,
+    slug,
+    label,
+    description,
+    pathwayEyebrow,
+    outcome,
+    duration,
+    audience,
+    stages
+  }
+`;
+
 export const CONSULTING_SERVICES_QUERY = `
   *[_type == "consultingService"] | order(displayOrder asc) {
     _id,
@@ -139,15 +154,45 @@ export const HOMEPAGE_JOURNEYS_QUERY = `
 `;
 
 export const CAREERS_QUERY = `
-  *[_type == "career"] | order(publishedDate desc) {
+  *[_type in ["career", "jobOpening"] && (!defined(active) || active == true)] | order(coalesce(publishedAt, publishedDate) desc) {
     _id,
+    _type,
     title,
     slug,
-    description,
+    "description": coalesce(summary, description),
     department,
     location,
+    workMode,
     employmentType,
-    publishedDate,
+    "publishedDate": coalesce(publishedAt, publishedDate),
+    closingDate,
+    responsibilities,
+    requirements,
+    applyEmail,
+    applyUrl,
+    content,
+    seoTitle,
+    seoDescription
+  }
+`;
+
+export const CAREER_BY_SLUG_QUERY = `
+  *[_type in ["career", "jobOpening"] && slug.current == $slug && (!defined(active) || active == true)][0] {
+    _id,
+    _type,
+    title,
+    slug,
+    "description": coalesce(summary, description),
+    department,
+    location,
+    workMode,
+    employmentType,
+    "publishedDate": coalesce(publishedAt, publishedDate),
+    closingDate,
+    responsibilities,
+    requirements,
+    applyEmail,
+    applyUrl,
     content,
     seoTitle,
     seoDescription

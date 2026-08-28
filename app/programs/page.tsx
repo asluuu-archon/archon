@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import { safeSanityFetch } from "@/lib/sanity.safe";
 import { PROGRAMS_QUERY } from "@/lib/sanity.queries";
 import { Program } from "@/lib/sanity.types";
+import { displayProgramTitle } from "@/lib/program-titles";
 import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -81,7 +82,7 @@ export default async function ProgramsIndexPage() {
                       </div>
                       
                       <h2 className="mt-8 text-2xl font-semibold text-white">
-                        {program.title}
+                        {displayProgramTitle(program.title)}
                       </h2>
                       
                       <p className="mt-4 text-sm leading-relaxed text-slate-400">

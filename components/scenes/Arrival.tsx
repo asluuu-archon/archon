@@ -1,14 +1,14 @@
 import {
-  ArrowDown,
   ArrowUpRight,
   Bot,
   BriefcaseBusiness,
   Globe2,
   GraduationCap,
   Network,
-  Radio,
   Sparkles,
 } from "lucide-react";
+
+import HeroOrbitEffects from "@/components/effects/HeroOrbitEffects";
 
 const ecosystemSignals = [
   {
@@ -49,13 +49,7 @@ export default function Arrival() {
       id="hero"
       className="relative flex min-h-screen items-center overflow-hidden bg-[#050816] px-6 pb-20 pt-32 text-white"
     >
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-[47%] h-[720px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300/[0.055] blur-[150px]" />
-        <div className="absolute left-1/2 top-[48%] h-[620px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-cyan-300/[0.09]" />
-        <div className="absolute left-1/2 top-[48%] h-[850px] w-[850px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-300/[0.045]" />
-        <div className="absolute inset-x-0 top-[48%] h-px bg-gradient-to-r from-transparent via-cyan-300/15 to-transparent" />
-        <div className="absolute bottom-[22%] left-1/2 top-[20%] w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-cyan-300/10 to-transparent" />
-      </div>
+      <HeroOrbitEffects />
 
       <div className="relative z-10 mx-auto w-full max-w-[1500px]">
         <div className="relative mx-auto flex min-h-[720px] max-w-7xl items-center justify-center">
@@ -84,30 +78,29 @@ export default function Arrival() {
           })}
 
           <div className="relative mx-auto max-w-6xl text-center">
-            <div className="mx-auto inline-flex items-center gap-3 rounded-full border border-cyan-300/20 bg-cyan-300/[0.06] px-5 py-2.5 backdrop-blur-xl">
-              <Radio className="h-4 w-4 text-cyan-300" />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.34em] text-cyan-200">
-                Archon Ecosystem Online
-              </span>
-              <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_16px_rgba(52,211,153,0.9)]" />
-            </div>
-
             <div className="relative mt-10">
-              <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300/[0.08] blur-[110px]" />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-1/2 h-[350px] w-[350px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300/[0.08] blur-[110px]"
+              />
               <h1 className="relative text-balance text-6xl font-bold leading-[0.94] tracking-[-0.04em] text-white md:text-8xl lg:text-[8.8rem]">
-                Dream.
+                Advise.
                 <br />
                 Build.
                 <br />
                 <span className="bg-gradient-to-r from-white via-cyan-100 to-cyan-300 bg-clip-text text-transparent">
-                  Impact.
+                  Scale.
                 </span>
               </h1>
             </div>
 
-            <div className="mx-auto mt-10 max-w-3xl">
-              <p className="text-balance text-lg leading-8 text-slate-300 md:text-xl">
-                A global ecosystem helping <strong className="font-semibold text-cyan-300">learners, consultants, builders and businesses</strong> move from ambition to meaningful outcomes through learning, consulting, technology and innovation.
+            <div className="mx-auto mt-10 max-w-3xl space-y-5">
+              <p className="text-balance text-lg font-medium leading-8 text-slate-200 md:text-xl">
+                Clearer careers. Stronger skills. Smarter businesses.
+              </p>
+              <p className="text-balance text-base leading-8 text-slate-400 md:text-lg">
+                Learning, technology and talent — brought together to move people and businesses
+                forward.
               </p>
             </div>
 
@@ -138,30 +131,23 @@ export default function Arrival() {
                   <div className="mt-3 text-[9px] uppercase tracking-[0.22em] text-slate-500">
                     {metric.label}
                   </div>
-                  <div aria-hidden="true" className="absolute bottom-0 left-1/2 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent" />
+                  <div
+                    aria-hidden="true"
+                    className="absolute bottom-0 left-1/2 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent"
+                  />
                 </div>
               ))}
             </div>
           </div>
         </div>
-
-        <a
-          href="#problem"
-          className="group absolute bottom-5 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3"
-        >
-          <span className="text-[9px] uppercase tracking-[0.35em] text-slate-500 transition group-hover:text-cyan-300">
-            Begin the journey
-          </span>
-          <span className="flex h-11 w-7 items-start justify-center rounded-full border border-white/15 p-2 transition group-hover:border-cyan-300/40">
-            <ArrowDown className="h-3 w-3 text-cyan-300" />
-          </span>
-        </a>
       </div>
 
       <div className="pointer-events-none absolute bottom-0 left-1/2 h-px w-[75%] -translate-x-1/2 bg-gradient-to-r from-transparent via-cyan-300/30 to-transparent" />
       <div className="pointer-events-none absolute bottom-8 right-8 hidden items-center gap-3 rounded-full border border-white/10 bg-black/20 px-4 py-2 backdrop-blur-xl xl:flex">
         <Network className="h-4 w-4 text-cyan-300" />
-        <span className="text-[9px] uppercase tracking-[0.25em] text-slate-500">Global technology ecosystem</span>
+        <span className="text-[9px] uppercase tracking-[0.25em] text-slate-500">
+          Global technology ecosystem
+        </span>
       </div>
     </section>
   );

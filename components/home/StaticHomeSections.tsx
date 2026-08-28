@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   Blocks,
@@ -7,8 +8,6 @@ import {
   Cpu,
   Globe2,
   GraduationCap,
-  Lightbulb,
-  MapPin,
   Network,
   Rocket,
   Sparkles,
@@ -16,6 +15,9 @@ import {
 } from "lucide-react";
 
 import type { ConsultingService, Program } from "@/lib/sanity.types";
+import { getWhatsAppEnquiryLink } from "@/lib/contact";
+import { displayProgramTitle } from "@/lib/program-titles";
+import { ylaamProducts } from "@/lib/ylaam-products";
 
 type StaticHomeSectionsProps = {
   programs: Program[];
@@ -24,14 +26,14 @@ type StaticHomeSectionsProps = {
 
 const fallbackPrograms = [
   {
-    title: "SAP Career Programmes",
+    title: "ERP Career Programs",
     description:
-      "Build an enterprise technology career with practical SAP learning, mentorship and meaningful project exposure.",
+      "Build an enterprise technology career with practical ERP learning, mentorship and meaningful project exposure.",
     href: "/programs/sap-career-programs",
     label: "Enterprise careers",
   },
   {
-    title: "Software Development",
+    title: "AI Software Development",
     description:
       "Learn to design, build and ship modern digital products with rigorous engineering foundations.",
     href: "/programs/software-development",
@@ -67,23 +69,23 @@ const fallbackServices = [
 const principles = [
   {
     icon: GraduationCap,
-    title: "Capability before credentials",
-    body: "We believe the most valuable learning makes people demonstrably more capable, not merely more qualified.",
+    title: "Skills over certificates",
+    body: "Our programs focus on what people can actually do on the job—not just what they can list on a resume.",
   },
   {
     icon: BriefcaseBusiness,
-    title: "Outcomes before activity",
-    body: "Every consulting engagement starts with the decision, workflow or outcome that needs to become better.",
+    title: "Solve what matters",
+    body: "Better outcomes start with the right problem. We identify what is slowing the business down and improve the process, system or decision that will turn that change into a measurable result.",
   },
   {
     icon: Cpu,
-    title: "Useful technology, deliberately applied",
-    body: "We use enterprise systems, software and AI where they create clarity, momentum and measurable value.",
+    title: "Technology that moves the business forward",
+    body: "The right technology should make work simpler, faster and more effective. We bring in ERP, software and AI where they create a meaningful difference.",
   },
   {
     icon: Globe2,
-    title: "Rooted locally, ready globally",
-    body: "Our ecosystem connects Indian ambition with globally relevant skills, delivery and opportunity.",
+    title: "Progress that lasts",
+    body: "The goal is not just to solve today’s problem, but to leave people, teams and businesses stronger for what comes next.",
   },
 ];
 
@@ -119,7 +121,7 @@ export default function StaticHomeSections({
   const learningPaths =
     programs.length > 0
       ? programs.slice(0, 4).map((program) => ({
-          title: program.title,
+          title: displayProgramTitle(program.title),
           description: program.description,
           href: `/programs/${program.slug.current}`,
           label: program.label,
@@ -140,12 +142,18 @@ export default function StaticHomeSections({
               <span className="block text-slate-400">more possible.</span>
             </h2>
           </div>
-          <div className="max-w-2xl lg:pb-2">
-            <p className="text-lg leading-8 text-slate-300 md:text-xl">
-              The world does not need more noise, generic training or technology for its own sake. It needs people and organisations with the confidence to make the next move well.
+          <div className="max-w-2xl space-y-5 lg:pb-2">
+            <p className="text-lg font-medium leading-8 text-slate-200 md:text-xl">
+              The right next step can change everything.
             </p>
-            <p className="mt-5 leading-7 text-slate-400">
-              Archon brings practical learning, enterprise consulting and purposeful innovation into one connected ecosystem. The goal is simple: turn ambition into capability, and capability into outcomes that matter.
+            <p className="text-lg leading-8 text-slate-300 md:text-xl">
+              Whether it is choosing a career, building new capabilities or improving how a business
+              operates, progress comes from knowing what to do next. We make those next steps
+              clearer, practical and achievable.
+            </p>
+            <p className="leading-7 text-slate-400">
+              Archon brings training, consulting, and software delivery together so students,
+              professionals, and organisations can move from intention to practical results.
             </p>
           </div>
         </div>
@@ -185,14 +193,20 @@ export default function StaticHomeSections({
           <div className="flex flex-col justify-center">
             <Eyebrow>Our story</Eyebrow>
             <h2 className="mt-6 text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">
-              Built around the people
-              <span className="block text-slate-400">behind every outcome.</span>
+              People are at the heart
+              <span className="block text-slate-400">of every outcome.</span>
             </h2>
             <p className="mt-8 max-w-2xl text-lg leading-8 text-slate-300">
-              Archon started with a conviction: people deserve learning that prepares them for the work ahead, and organisations deserve technology partners who understand the outcome before proposing the tool.
+              Careers, businesses and technology may look very different, but progress always begins
+              with people.
             </p>
             <p className="mt-5 max-w-2xl leading-7 text-slate-400">
-              Today, that conviction informs every programme, consulting engagement and product idea in our ecosystem. We remain practical by design, curious by nature and accountable to the progress of the people who place their trust in us.
+              That thinking shapes everything at Archon — how we prepare people for the work ahead,
+              how we solve business problems, how we build technology and how we work with our
+              partners.
+            </p>
+            <p className="mt-5 max-w-2xl leading-7 text-slate-400">
+              We keep things practical, stay curious and measure our work by the difference it makes.
             </p>
             <Link href="/about" className="group mt-9 inline-flex w-fit items-center gap-3 text-sm font-semibold text-cyan-300 transition hover:text-cyan-100">
               Discover the Archon story <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -285,46 +299,59 @@ export default function StaticHomeSections({
       </section>
 
       <section id="products" className="border-y border-white/[0.07] bg-[radial-gradient(circle_at_78%_10%,rgba(34,211,238,0.1),transparent_30%),rgba(255,255,255,0.012)] px-6 py-24 md:px-8 md:py-32">
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
-            <Eyebrow>Products & innovation</Eyebrow>
-            <h2 className="mt-6 text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">
-              Possibility becomes progress
-              <span className="block text-slate-400">when it is made useful.</span>
-            </h2>
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300">
-              The Archon product portfolio turns practical thinking into digital experiences, platforms and workflows built around real people, real teams and measurable outcomes.
-            </p>
-            <Link href="/products" className="group mt-9 inline-flex items-center gap-3 rounded-full bg-cyan-300 px-6 py-3.5 text-sm font-semibold text-[#031018] transition hover:bg-cyan-200">
-              Explore products <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
-          <div className="rounded-[2rem] border border-cyan-300/15 bg-[#07111f]/80 p-8 md:p-10">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-300/10">
-              <Lightbulb className="h-6 w-6 text-cyan-300" />
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col justify-between gap-10 lg:flex-row lg:items-end">
+            <div className="max-w-3xl">
+              <Eyebrow>Products & innovation</Eyebrow>
+              <h2 className="mt-6 text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">
+                Possibility becomes progress
+                <span className="block text-slate-400">when it is made useful.</span>
+              </h2>
+              <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300">
+                Archon’s product ecosystem lives in YLAAM — focused platforms for operations,
+                engagement, learning, meetings, AI guidance and organisation control.
+              </p>
             </div>
-            <h3 className="mt-9 text-2xl font-semibold text-white">Build with purpose.</h3>
-            <p className="mt-4 leading-7 text-slate-400">Every product begins with a practical problem, then earns its place through clarity, usability and genuine value.</p>
-            <div className="mt-10 border-t border-white/10 pt-6 text-sm leading-6 text-cyan-100">Product, platform and automation paths designed for what comes next.</div>
+            <a
+              href="https://ylaam.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="group inline-flex items-center gap-3 self-start rounded-full bg-cyan-300 px-6 py-3.5 text-sm font-semibold text-[#031018] transition hover:bg-cyan-200 lg:self-auto"
+            >
+              Explore YLAAM <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </a>
           </div>
-        </div>
-      </section>
 
-      <SectionDivider label="Global capability" />
-
-      <section className="px-6 py-24 md:px-8 md:py-32">
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2">
-          <div className="rounded-[2rem] border border-white/10 bg-[#07111f]/70 p-8 md:p-10">
-            <div className="flex items-center gap-3 text-cyan-300"><Globe2 className="h-5 w-5" /><span className="text-[10px] font-semibold uppercase tracking-[0.25em]">Global by design</span></div>
-            <h2 className="mt-8 text-3xl font-semibold leading-tight text-white md:text-4xl">Built in India. Ready for the world.</h2>
-            <p className="mt-5 leading-7 text-slate-400">Our work connects local potential to globally relevant capability — through career pathways, technology delivery and relationships built on trust.</p>
-            <div className="mt-10 flex flex-wrap gap-3 text-xs text-cyan-100"><span className="rounded-full border border-white/10 px-4 py-2">Enterprise systems</span><span className="rounded-full border border-white/10 px-4 py-2">Digital delivery</span><span className="rounded-full border border-white/10 px-4 py-2">Career mobility</span></div>
-          </div>
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.025] p-8 md:p-10">
-            <div className="flex items-center gap-3 text-cyan-300"><MapPin className="h-5 w-5" /><span className="text-[10px] font-semibold uppercase tracking-[0.25em]">Next chapter</span></div>
-            <h2 className="mt-8 text-3xl font-semibold leading-tight text-white md:text-4xl">A place to learn, build and belong.</h2>
-            <p className="mt-5 leading-7 text-slate-400">The future of Archon is more connected: a learning environment where people can find direction, collaborate on real work and turn knowledge into momentum.</p>
-            <Link href="/about" className="group mt-9 inline-flex items-center gap-3 text-sm font-semibold text-cyan-300 transition hover:text-cyan-100">Meet the ecosystem <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {ylaamProducts.map((product) => (
+              <a
+                key={product.id}
+                href={product.href}
+                target="_blank"
+                rel="noreferrer"
+                className="group overflow-hidden rounded-[1.8rem] border border-white/10 bg-[#07111f]/75 transition hover:-translate-y-1 hover:border-cyan-300/30"
+              >
+                <div className="relative h-44 overflow-hidden border-b border-white/10">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07111f] via-transparent to-transparent" />
+                </div>
+                <div className="p-6">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-300">
+                    {product.category}
+                  </p>
+                  <h3 className="mt-3 text-xl font-semibold text-white transition group-hover:text-cyan-200">
+                    {product.name}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-slate-400 line-clamp-3">{product.description}</p>
+                </div>
+              </a>
+            ))}
           </div>
         </div>
       </section>
@@ -347,7 +374,14 @@ export default function StaticHomeSections({
             <h2 className="mt-7 text-balance text-4xl font-semibold leading-tight text-white md:text-6xl">What would meaningful progress look like for you?</h2>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300">Whether you are building a career, improving an enterprise workflow or exploring a digital product, we would like to understand the opportunity before recommending a path.</p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Link href="#contact" className="group inline-flex items-center justify-center gap-3 rounded-full bg-cyan-300 px-7 py-4 text-sm font-semibold text-[#031018] transition hover:bg-cyan-200">Talk to an advisor <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
+              <a
+                href={getWhatsAppEnquiryLink("Hi Archon, I would like to talk to an advisor.")}
+                target="_blank"
+                rel="noreferrer"
+                className="group inline-flex items-center justify-center gap-3 rounded-full bg-cyan-300 px-7 py-4 text-sm font-semibold text-[#031018] transition hover:bg-cyan-200"
+              >
+                Talk to an advisor <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </a>
               <Link href="/programs" className="inline-flex items-center justify-center gap-3 rounded-full border border-white/15 px-7 py-4 text-sm font-semibold text-white transition hover:border-cyan-300/40 hover:bg-white/[0.06]">Explore learning paths <Rocket className="h-4 w-4 text-cyan-300" /></Link>
             </div>
           </div>

@@ -54,13 +54,13 @@ export const journeyMilestones = [
 
 export const programs = [
   {
-    title: "SAP Career Programs",
+    title: "ERP Career Programs",
     description:
-      "Mentorship, internship exposure, business scenarios and project-based learning for aspiring SAP professionals.",
+      "Mentorship, internship exposure, business scenarios and project-based learning for aspiring ERP professionals.",
     label: "Mentorship",
   },
   {
-    title: "Software Development",
+    title: "AI Software Development",
     description:
       "Python, Java, full stack development and modern engineering programs built around real project outcomes.",
     label: "Training",
@@ -81,19 +81,19 @@ export const programs = [
 
 export const products = [
   {
-    name: "AI Command Center",
-    status: "In development",
-    text: "A smart operating layer for conversations, leads, automation and business intelligence.",
+    name: "YLAAM One",
+    status: "Existing platform",
+    text: "A connected operating space for leads, follow-up, finance, assets, and business decisions.",
   },
   {
-    name: "ArchRoom",
+    name: "YLAAM Engage",
     status: "Planned",
-    text: "A future meeting and collaboration platform built first for Archon's internal ecosystem.",
+    text: "Turn Instagram, Facebook and WhatsApp conversations into qualified contacts and next actions.",
   },
   {
-    name: "SAP Guru Assistant",
-    status: "In development",
-    text: "AI-powered support for SAP career guidance, social replies, leads and student communication.",
+    name: "YLAAM Learning",
+    status: "Live",
+    text: "Learn with purpose and practise interviews before the opportunity matters.",
   },
 ];
 

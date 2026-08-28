@@ -1,15 +1,22 @@
 "use client";
 
+import Image from "next/image";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useState } from "react";
+
+import { getWhatsAppEnquiryLink } from "@/lib/contact";
 
 const navigation = [
   { label: "Learning", href: "/programs" },
   { label: "Consulting", href: "/consulting" },
   { label: "Products", href: "/#products" },
-  { label: "Stories", href: "/#stories" },
+  { label: "Placements", href: "/placements" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Reviews", href: "/testimonials" },
   { label: "Company", href: "/about" },
 ];
+
+const advisorHref = getWhatsAppEnquiryLink("Hi Archon, I would like to talk to an advisor.");
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -22,15 +29,29 @@ export default function Navbar() {
           aria-label="Primary navigation"
           className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-white/10 bg-[#07111f]/80 px-3 py-2 shadow-[0_0_60px_rgba(34,211,238,0.07)] backdrop-blur-2xl md:px-4"
         >
-          <a href="/" onClick={closeMenu} className="group flex items-center gap-3" aria-label="Archon home">
-            <span className="h-9 w-9 rounded-full bg-cyan-400 shadow-[0_0_24px_rgba(34,211,238,0.4)]" />
+          <a
+            href="/"
+            onClick={closeMenu}
+            className="group flex items-center gap-3"
+            aria-label="Archon home"
+          >
+            <Image
+              src="/brand/archon-logo.png"
+              alt="Archon"
+              width={36}
+              height={30}
+              className="h-8 w-auto object-contain"
+              priority
+            />
             <span>
               <span className="block text-xs font-bold tracking-[0.08em] text-white">ARCHON</span>
-              <span className="block text-[7px] uppercase tracking-[0.32em] text-slate-500">Since 2013</span>
+              <span className="block text-[7px] uppercase tracking-[0.32em] text-slate-500">
+                Since 2013
+              </span>
             </span>
           </a>
 
-          <div className="hidden items-center gap-7 lg:flex">
+          <div className="hidden items-center gap-4 lg:flex">
             {navigation.map((item) => (
               <a
                 key={item.label}
@@ -42,9 +63,11 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="hidden items-center sm:flex">
+          <div className="hidden items-center gap-3 sm:flex">
             <a
-              href="/#contact"
+              href={advisorHref}
+              target="_blank"
+              rel="noreferrer"
               className="group flex items-center gap-2 rounded-full bg-cyan-300 px-5 py-2.5 text-[10px] font-semibold text-[#031018] transition duration-300 hover:-translate-y-0.5 hover:bg-cyan-200 hover:shadow-[0_0_30px_rgba(34,211,238,0.25)]"
             >
               Talk to an Advisor
@@ -97,7 +120,9 @@ export default function Navbar() {
             </div>
 
             <a
-              href="/#contact"
+              href={advisorHref}
+              target="_blank"
+              rel="noreferrer"
               onClick={closeMenu}
               className="mt-5 flex w-full items-center justify-between rounded-2xl bg-cyan-300 px-5 py-4 font-semibold text-[#031018]"
             >

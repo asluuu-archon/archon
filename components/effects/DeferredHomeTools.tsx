@@ -13,16 +13,8 @@ const AIContextObserver = dynamic(
 const GuidedTour = dynamic(() => import("@/components/ai/GuidedTour"), {
   ssr: false,
 });
-const CommandCenter = dynamic(
-  () => import("@/components/command/CommandCenter"),
-  { ssr: false }
-);
 const ChapterTimeline = dynamic(
   () => import("@/components/layout/ChapterTimeline"),
-  { ssr: false }
-);
-const ScrollProgress = dynamic(
-  () => import("@/components/layout/ScrollProgress"),
   { ssr: false }
 );
 const InteractiveCursor = dynamic(
@@ -65,9 +57,7 @@ export default function DeferredHomeTools() {
       <AIContextObserver />
       <ArchonAI />
       <GuidedTour />
-      <CommandCenter />
       <ChapterTimeline />
-      <ScrollProgress />
       <InteractiveCursor />
     </>
   );

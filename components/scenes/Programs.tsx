@@ -144,6 +144,7 @@ const pathwayData = [
 ];
 
 import { Program } from "@/lib/sanity.types";
+import { displayProgramTitle } from "@/lib/program-titles";
 
 const fallbackPrograms: Program[] = pathwayData.map((pathway, index) => {
   const card = fallbackProgramCards[index];
@@ -167,7 +168,10 @@ const fallbackPrograms: Program[] = pathwayData.map((pathway, index) => {
 });
 
 export default function Programs({ programs }: { programs?: Program[] }) {
-  const programList = programs?.length ? programs : fallbackPrograms;
+  const programList = (programs?.length ? programs : fallbackPrograms).map((program) => ({
+    ...program,
+    title: displayProgramTitle(program.title),
+  }));
   const [activeIndex, setActiveIndex] = useState(0);
   const selectedIndex = Math.min(activeIndex, Math.max(programList.length - 1, 0));
   const activeProgram = programList[selectedIndex];

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -16,7 +17,9 @@ const navigation = [
   { label: "Learning", href: "/#learning" },
   { label: "Consulting", href: "/#consulting" },
   { label: "Products", href: "/#products" },
-  { label: "Impact", href: "/#stories" },
+  { label: "Placements", href: "/placements" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Reviews", href: "/testimonials" },
   { label: "Insights", href: "/insights" },
 ];
 
@@ -50,7 +53,13 @@ export default function Footer() {
         <div className="grid gap-12 lg:grid-cols-[1.25fr_0.72fr_1.15fr]">
           <div>
             <a href="/#hero" className="inline-flex items-center gap-3">
-              <span className="h-9 w-9 rounded-full bg-cyan-300 shadow-[0_0_28px_rgba(34,211,238,0.34)]" />
+              <Image
+                src="/brand/archon-logo.png"
+                alt="Archon"
+                width={40}
+                height={34}
+                className="h-9 w-auto object-contain"
+              />
               <span>
                 <span className="block text-lg font-bold tracking-[0.12em] text-white">
                   ARCHON

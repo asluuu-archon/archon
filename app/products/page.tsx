@@ -1,55 +1,43 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Boxes, Sparkles } from "lucide-react";
 
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import { PRODUCTS_QUERY } from "@/lib/sanity.queries";
-import { safeSanityFetch } from "@/lib/sanity.safe";
-import type { Product } from "@/lib/sanity.types";
+import { getWhatsAppEnquiryLink } from "@/lib/contact";
+import { ylaamProducts } from "@/lib/ylaam-products";
 import { absoluteUrl, siteUrl } from "@/lib/site";
-import { urlForSanityImage } from "@/sanity/image";
 
 export const metadata: Metadata = {
   title: "Products | Archon Solutions",
   description:
-    "Explore the Archon product ecosystem, including practical digital products and platforms for modern business outcomes.",
+    "Explore the Archon product ecosystem through YLAAM — connected platforms for operations, engagement, learning, meetings, AI guidance and admin.",
   alternates: {
     canonical: absoluteUrl("/products"),
   },
   openGraph: {
     title: "Products | Archon Solutions",
     description:
-      "Explore the Archon product ecosystem, including practical digital products and platforms for modern business outcomes.",
+      "Explore the Archon product ecosystem through YLAAM — connected platforms for operations, engagement, learning, meetings, AI guidance and admin.",
     url: absoluteUrl("/products"),
   },
 };
 
-const statusStyles: Record<Product["status"], string> = {
-  Live: "border-emerald-300/20 bg-emerald-300/10 text-emerald-200",
-  "In development": "border-amber-300/20 bg-amber-300/10 text-amber-100",
-  Planned: "border-white/10 bg-white/[0.04] text-slate-300",
-};
-
-export default async function ProductsPage() {
-  const products = await safeSanityFetch<Product[]>({
-    query: PRODUCTS_QUERY,
-    tags: ["product"],
-    defaultValue: [],
-  });
-
+export default function ProductsPage() {
   const productListJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Archon Product Ecosystem",
-    itemListElement: products.map((product, index) => ({
+    name: "Archon YLAAM Product Ecosystem",
+    itemListElement: ylaamProducts.map((product, index) => ({
       "@type": "ListItem",
       position: index + 1,
       item: {
         "@type": "Product",
         name: product.name,
         description: product.description,
-        url: `${siteUrl}/products/${product.slug.current}`,
+        url: product.href,
+        image: `${siteUrl}${product.image}`,
       },
     })),
   };
@@ -78,9 +66,17 @@ export default async function ProductsPage() {
                 <span className="text-slate-400">possibility into progress.</span>
               </h1>
               <p className="mt-8 text-lg leading-relaxed text-slate-300 md:text-xl">
-                Archon products extend practical thinking into digital
-                experiences, platforms and workflows designed around real
-                people, real teams and measurable outcomes.
+                Archon’s product ecosystem lives in{" "}
+                <a
+                  href="https://ylaam.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-cyan-300 underline-offset-4 transition hover:text-cyan-200 hover:underline"
+                >
+                  YLAAM
+                </a>
+                — a connected family of platforms for business operations,
+                conversations, learning, collaboration and intelligent guidance.
               </p>
             </div>
 
@@ -97,7 +93,7 @@ export default async function ProductsPage() {
           <section aria-labelledby="product-list" className="mt-20">
             <div className="flex items-center justify-between border-b border-white/10 pb-6">
               <div>
-                <p className="text-sm font-medium text-cyan-300">The ecosystem</p>
+                <p className="text-sm font-medium text-cyan-300">The YLAAM suite</p>
                 <h2 id="product-list" className="mt-2 text-3xl font-semibold tracking-tight">
                   Explore what we are building.
                 </h2>
@@ -105,61 +101,47 @@ export default async function ProductsPage() {
               <Boxes className="h-6 w-6 text-slate-500" aria-hidden="true" />
             </div>
 
-            {products.length > 0 ? (
-              <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {products.map((product) => (
-                  <Link
-                    key={product._id}
-                    href={`/products/${product.slug.current}`}
-                    className="group flex min-h-[360px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-white/[0.04]"
-                  >
-                    {product.featuredImage ? (
-                      <div className="relative h-48 overflow-hidden border-b border-white/10 bg-slate-950">
-                        <img
-                          src={urlForSanityImage(product.featuredImage).width(800).height(480).fit("crop").auto("format").url()}
-                          alt={product.name}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#020611] via-transparent to-transparent" />
-                      </div>
-                    ) : (
-                      <div className="relative flex h-32 items-end border-b border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_55%)] p-6">
-                        <Boxes className="h-8 w-8 text-cyan-300" />
-                      </div>
-                    )}
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {ylaamProducts.map((product) => (
+                <a
+                  key={product.id}
+                  href={product.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group flex min-h-[360px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-white/[0.04]"
+                >
+                  <div className="relative h-48 overflow-hidden border-b border-white/10 bg-slate-950">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#020611] via-[#020611]/20 to-transparent" />
+                    <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-[#020611]/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-100 backdrop-blur">
+                      {product.status}
+                    </span>
+                  </div>
 
-                    <div className="flex flex-1 flex-col p-6">
-                      <div className="flex items-start justify-between gap-4">
-                        <h3 className="text-xl font-semibold tracking-tight transition-colors group-hover:text-cyan-200">
-                          {product.name}
-                        </h3>
-                        <span
-                          className={`shrink-0 rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${statusStyles[product.status]}`}
-                        >
-                          {product.status}
-                        </span>
-                      </div>
-                      <p className="mt-4 text-sm leading-relaxed text-slate-400">
-                        {product.description}
-                      </p>
-                      <div className="mt-auto flex items-center gap-2 border-t border-white/10 pt-5 text-sm font-medium text-white">
-                        Explore product
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </div>
+                  <div className="flex flex-1 flex-col p-6">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-300">
+                      {product.category}
+                    </p>
+                    <h3 className="mt-3 text-xl font-semibold tracking-tight transition-colors group-hover:text-cyan-200">
+                      {product.name}
+                    </h3>
+                    <p className="mt-4 text-sm leading-relaxed text-slate-400">
+                      {product.description}
+                    </p>
+                    <div className="mt-auto flex items-center gap-2 border-t border-white/10 pt-5 text-sm font-medium text-white">
+                      Explore product
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="mt-8 rounded-[2rem] border border-white/10 bg-white/[0.02] p-10 text-center md:p-14">
-                <Boxes className="mx-auto h-8 w-8 text-cyan-300" />
-                <h3 className="mt-5 text-2xl font-semibold">The next product is taking shape.</h3>
-                <p className="mx-auto mt-4 max-w-xl leading-relaxed text-slate-400">
-                  New Archon product experiences will appear here as they move
-                  from concept to useful reality.
-                </p>
-              </div>
-            )}
+                  </div>
+                </a>
+              ))}
+            </div>
           </section>
 
           <section className="mt-20 flex flex-col items-start gap-6 rounded-[2rem] border border-white/10 bg-white/[0.02] p-8 md:p-12 lg:flex-row lg:items-center lg:justify-between">
@@ -170,13 +152,15 @@ export default async function ProductsPage() {
                 product, platform or automation path that makes sense.
               </p>
             </div>
-            <Link
-              href="/#contact"
+            <a
+              href={getWhatsAppEnquiryLink("Hi Archon, I would like to discuss a product opportunity.")}
+              target="_blank"
+              rel="noreferrer"
               className="group flex h-12 shrink-0 items-center gap-2 rounded-full bg-cyan-400 px-6 font-medium text-slate-950 transition-colors hover:bg-cyan-300"
             >
               Discuss an Opportunity
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            </a>
           </section>
         </div>
       </main>

@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import { safeSanityFetch } from "@/lib/sanity.safe";
 import { PROGRAM_BY_SLUG_QUERY, PROGRAMS_QUERY } from "@/lib/sanity.queries";
 import { Program } from "@/lib/sanity.types";
+import { displayProgramTitle } from "@/lib/program-titles";
 import { absoluteUrl, siteUrl } from "@/lib/site";
 
 export async function generateStaticParams() {
@@ -42,15 +43,16 @@ export async function generateMetadata({
   }
 
   const pathname = `/programs/${program.slug.current}`;
+  const title = displayProgramTitle(program.title);
 
   return {
-    title: `${program.title} | Archon Learning`,
+    title: `${title} | Archon Learning`,
     description: program.description,
     alternates: {
       canonical: absoluteUrl(pathname),
     },
     openGraph: {
-      title: `${program.title} | Archon Learning`,
+      title: `${title} | Archon Learning`,
       description: program.description,
       url: absoluteUrl(pathname),
     },
@@ -75,12 +77,13 @@ export default async function ProgramDetailPage({
   }
 
   // AEO/SEO: Course Structured Data for Answer Engines
+  const displayTitle = displayProgramTitle(program.title);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Course",
     "@id": absoluteUrl(`/programs/${program.slug.current}`),
     "url": absoluteUrl(`/programs/${program.slug.current}`),
-    "name": program.title,
+    "name": displayTitle,
     "description": program.description,
     "provider": {
       "@type": "Organization",
@@ -121,7 +124,7 @@ export default async function ProgramDetailPage({
             </div>
             
             <h1 className="mt-6 text-3xl font-medium leading-tight tracking-tight md:text-5xl lg:text-6xl">
-              {program.title}
+              {displayTitle}
             </h1>
             
             <p className="mt-6 text-lg leading-relaxed text-slate-300 md:text-xl">

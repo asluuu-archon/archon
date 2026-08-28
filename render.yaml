@@ -1,0 +1,40 @@
+# Render Blueprint for Archon website
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: archon-website
+    runtime: node
+    plan: starter
+    region: singapore
+    branch: staging
+    autoDeployTrigger: commit
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: NEXT_PUBLIC_SANITY_PROJECT_ID
+        sync: false
+      - key: NEXT_PUBLIC_SANITY_DATASET
+        sync: false
+      - key: NEXT_PUBLIC_SANITY_API_VERSION
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

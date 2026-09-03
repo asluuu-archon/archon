@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth/session";
@@ -9,11 +10,11 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (!pathname.startsWith("/admin")) {
-    return;
+    return NextResponse.next();
   }
 
   if (publicAdminPaths.some((path) => pathname.startsWith(path))) {
-    return;
+    return NextResponse.next();
   }
 
   const token = request.cookies.get(SESSION_COOKIE)?.value;
@@ -23,7 +24,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     await verifySessionToken(token);
-    return;
+    return NextResponse.next();
   } catch {
     return redirectToAdminLogin(request);
   }

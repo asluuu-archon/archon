@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { verifyPassword } from "@/lib/auth/password";
-import { createSessionToken, setSessionCookie } from "@/lib/auth/session";
+import { applySessionCookie, createSessionToken } from "@/lib/auth/session";
 import { isDatabaseConfigured, prisma } from "@/lib/db/prisma";
 
 export async function POST(request: Request) {
@@ -32,12 +32,12 @@ export async function POST(request: Request) {
       role: "ADMIN",
     });
 
-    await setSessionCookie(token);
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       ok: true,
       user: { email: user.email, name: user.name },
     });
+
+    return applySessionCookie(response, token);
   } catch (error) {
     console.error("Admin login failed:", error);
     return NextResponse.json(

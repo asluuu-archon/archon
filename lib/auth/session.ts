@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export const SESSION_COOKIE = "archon_admin_session";
 
@@ -7,6 +8,14 @@ export type SessionPayload = {
   userId: string;
   email: string;
   role: "ADMIN";
+};
+
+export const sessionCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  path: "/",
+  maxAge: 60 * 60 * 24 * 7,
 };
 
 function getSecret() {
@@ -41,16 +50,27 @@ export async function getSession(): Promise<SessionPayload | null> {
   }
 }
 
-export async function setSessionCookie(token: string) {
-  (await cookies()).set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+/** Attach the session cookie to a Route Handler response (reliable in production). */
+export function applySessionCookie(response: NextResponse, token: string) {
+  response.cookies.set(SESSION_COOKIE, token, sessionCookieOptions);
+  return response;
+}
+
+export function clearSessionCookieOnResponse(response: NextResponse) {
+  response.cookies.set(SESSION_COOKIE, "", {
+    ...sessionCookieOptions,
+    maxAge: 0,
   });
+  return response;
+}
+
+export async function setSessionCookie(token: string) {
+  (await cookies()).set(SESSION_COOKIE, token, sessionCookieOptions);
 }
 
 export async function clearSessionCookie() {
-  (await cookies()).delete(SESSION_COOKIE);
+  (await cookies()).set(SESSION_COOKIE, "", {
+    ...sessionCookieOptions,
+    maxAge: 0,
+  });
 }

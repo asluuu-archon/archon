@@ -43,6 +43,14 @@ yarn-error.log*
 # Temporary Supabase provisioning artifacts
 .supabase-db-pass.tmp
 .supabase-project.tmp.json
+.admin-credentials.tmp
+.render-service-id.tmp
+.render-local-build.tmp
+.render-log-snippet.tmp
+.render-project.tmp.json
+
+# Local probe / cookie / RSC debug artifacts
+*.tmp
 
 # vercel
 .vercel

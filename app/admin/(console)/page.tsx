@@ -1,14 +1,6 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import { AdminNavLink } from "@/components/admin/AdminNavLink";
 
-import { getSession } from "@/lib/auth/session";
-
-export default async function AdminHomePage() {
-  const session = await getSession();
-  if (!session) {
-    redirect("/admin/login");
-  }
-
+export default function AdminHomePage() {
   const cards = [
     {
       href: "/admin/gallery",
@@ -37,30 +29,30 @@ export default async function AdminHomePage() {
 
       <div className="mt-10 grid gap-6 md:grid-cols-3">
         {cards.map((card) => (
-          <Link
+          <AdminNavLink
             key={card.href}
             href={card.href}
             className="rounded-[2rem] border border-white/10 bg-[#07111f]/70 p-6 transition hover:border-cyan-300/30 hover:bg-cyan-300/[0.04]"
           >
             <h2 className="text-xl font-semibold text-cyan-300">{card.title}</h2>
             <p className="mt-3 text-sm leading-7 text-slate-400">{card.description}</p>
-          </Link>
+          </AdminNavLink>
         ))}
       </div>
 
       <div className="mt-10 rounded-[2rem] border border-white/10 bg-white/[0.02] p-6 text-sm text-slate-400">
         Public pages:{" "}
-        <Link href="/gallery" className="text-cyan-300 hover:underline">
+        <a href="/gallery" className="text-cyan-300 hover:underline">
           /gallery
-        </Link>
+        </a>
         ,{" "}
-        <Link href="/placements" className="text-cyan-300 hover:underline">
+        <a href="/placements" className="text-cyan-300 hover:underline">
           /placements
-        </Link>
+        </a>
         ,{" "}
-        <Link href="/testimonials" className="text-cyan-300 hover:underline">
+        <a href="/testimonials" className="text-cyan-300 hover:underline">
           /testimonials
-        </Link>
+        </a>
       </div>
     </div>
   );

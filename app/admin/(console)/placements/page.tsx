@@ -6,6 +6,7 @@ import { ImagePlus } from "lucide-react";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { UploadedMedia } from "@/components/media/UploadedMedia";
 import { isVideoMedia } from "@/lib/media";
+import { prepareMediaForUpload } from "@/lib/uploads/prepare-media";
 
 type PlacementItem = {
   id: string;
@@ -47,8 +48,10 @@ export default function AdminPlacementsPage() {
   const [editSalaryAmount, setEditSalaryAmount] = useState("");
   const [editFile, setEditFile] = useState<File | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileRef = useRef<HTMLInputElement>(null);
+  const submittingRef = useRef(false);
 
   async function loadItems() {
     const response = await fetch("/api/admin/placements");
@@ -63,6 +66,8 @@ export default function AdminPlacementsPage() {
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
+    if (submittingRef.current) return;
+
     setError("");
     setMessage("");
 
@@ -77,30 +82,46 @@ export default function AdminPlacementsPage() {
       return;
     }
 
-    const formData = new FormData();
-    if (file) formData.append("file", file);
-    formData.append("companyName", companyName);
-    formData.append("course", course);
-    if (salary) formData.append("salary", salary);
+    submittingRef.current = true;
+    setSubmitting(true);
 
-    const response = await fetch("/api/admin/placements", {
-      method: "POST",
-      body: formData,
-    });
-    const data = (await response.json()) as { error?: string };
+    try {
+      const formData = new FormData();
+      if (file) {
+        const prepared = await prepareMediaForUpload(file, setMessage);
+        formData.append("file", prepared);
+      }
+      formData.append("companyName", companyName);
+      formData.append("course", course);
+      if (salary) formData.append("salary", salary);
+      setMessage("Uploading…");
 
-    if (!response.ok) {
-      setError(data.error ?? "Could not save placement.");
-      return;
+      const response = await fetch("/api/admin/placements", {
+        method: "POST",
+        body: formData,
+      });
+      const data = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        setError(data.error ?? "Could not save placement.");
+        setMessage("");
+        return;
+      }
+
+      setMessage("Placement added.");
+      setCompanyName("");
+      setCourse("");
+      setSalaryAmount("");
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      await loadItems();
+    } catch {
+      setError("Could not save placement.");
+      setMessage("");
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
     }
-
-    setMessage("Placement added.");
-    setCompanyName("");
-    setCourse("");
-    setSalaryAmount("");
-    setFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    await loadItems();
   }
 
   function startEdit(item: PlacementItem) {
@@ -113,7 +134,7 @@ export default function AdminPlacementsPage() {
   }
 
   async function saveEdit() {
-    if (!editing) return;
+    if (!editing || savingEdit) return;
     setSavingEdit(true);
     setError("");
 
@@ -129,7 +150,10 @@ export default function AdminPlacementsPage() {
     formData.append("companyName", editCompanyName);
     formData.append("course", editCourse);
     if (salary) formData.append("salary", salary);
-    if (editFile) formData.append("file", editFile);
+    if (editFile) {
+      const prepared = await prepareMediaForUpload(editFile, setMessage);
+      formData.append("file", prepared);
+    }
 
     try {
       const response = await fetch("/api/admin/placements", {
@@ -177,12 +201,14 @@ export default function AdminPlacementsPage() {
             type="file"
             accept="image/*,video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"
             className="hidden"
+            disabled={submitting}
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}
           />
           <button
             type="button"
+            disabled={submitting}
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-300/10 px-5 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-300/20"
+            className="inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-300/10 px-5 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <ImagePlus className="h-4 w-4" />
             {file ? `Selected: ${file.name}` : "Choose photo or video"}
@@ -229,9 +255,10 @@ export default function AdminPlacementsPage() {
         </label>
         <button
           type="submit"
-          className="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-[#031018] md:col-span-2 md:w-fit"
+          disabled={submitting}
+          className="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-[#031018] disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2 md:w-fit"
         >
-          Add placement
+          {submitting ? "Working…" : "Add placement"}
         </button>
       </form>
 

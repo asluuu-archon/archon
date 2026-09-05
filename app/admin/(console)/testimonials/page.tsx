@@ -6,6 +6,7 @@ import { ImagePlus } from "lucide-react";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { UploadedMedia } from "@/components/media/UploadedMedia";
 import { isVideoMedia } from "@/lib/media";
+import { prepareMediaForUpload } from "@/lib/uploads/prepare-media";
 
 type TestimonialItem = {
   id: string;
@@ -37,8 +38,10 @@ export default function AdminTestimonialsPage() {
   const [editRating, setEditRating] = useState(5);
   const [editFile, setEditFile] = useState<File | null>(null);
   const [savingEdit, setSavingEdit] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileRef = useRef<HTMLInputElement>(null);
+  const submittingRef = useRef(false);
 
   async function loadItems() {
     const response = await fetch("/api/admin/testimonials");
@@ -53,6 +56,8 @@ export default function AdminTestimonialsPage() {
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
+    if (submittingRef.current) return;
+
     setError("");
     setMessage("");
 
@@ -67,34 +72,50 @@ export default function AdminTestimonialsPage() {
       return;
     }
 
-    const formData = new FormData();
-    if (file) formData.append("file", file);
-    formData.append("authorName", authorName);
-    formData.append("authorRole", authorRole);
-    formData.append("company", company);
-    formData.append("content", content);
-    formData.append("rating", String(rating));
+    submittingRef.current = true;
+    setSubmitting(true);
 
-    const response = await fetch("/api/admin/testimonials", {
-      method: "POST",
-      body: formData,
-    });
-    const data = (await response.json()) as { error?: string };
+    try {
+      const formData = new FormData();
+      if (file) {
+        const prepared = await prepareMediaForUpload(file, setMessage);
+        formData.append("file", prepared);
+      }
+      formData.append("authorName", authorName);
+      formData.append("authorRole", authorRole);
+      formData.append("company", company);
+      formData.append("content", content);
+      formData.append("rating", String(rating));
+      setMessage("Uploading…");
 
-    if (!response.ok) {
-      setError(data.error ?? "Could not save review.");
-      return;
+      const response = await fetch("/api/admin/testimonials", {
+        method: "POST",
+        body: formData,
+      });
+      const data = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        setError(data.error ?? "Could not save review.");
+        setMessage("");
+        return;
+      }
+
+      setMessage("Review published.");
+      setAuthorName("");
+      setAuthorRole("");
+      setCompany("");
+      setContent("");
+      setRating(5);
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      await loadItems();
+    } catch {
+      setError("Could not save review.");
+      setMessage("");
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
     }
-
-    setMessage("Review published.");
-    setAuthorName("");
-    setAuthorRole("");
-    setCompany("");
-    setContent("");
-    setRating(5);
-    setFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    await loadItems();
   }
 
   function startEdit(item: TestimonialItem) {
@@ -109,7 +130,7 @@ export default function AdminTestimonialsPage() {
   }
 
   async function saveEdit() {
-    if (!editing) return;
+    if (!editing || savingEdit) return;
     setSavingEdit(true);
     setError("");
 
@@ -120,7 +141,10 @@ export default function AdminTestimonialsPage() {
     formData.append("company", editCompany);
     formData.append("content", editContent);
     formData.append("rating", String(editRating));
-    if (editFile) formData.append("file", editFile);
+    if (editFile) {
+      const prepared = await prepareMediaForUpload(editFile, setMessage);
+      formData.append("file", prepared);
+    }
 
     try {
       const response = await fetch("/api/admin/testimonials", {
@@ -166,12 +190,14 @@ export default function AdminTestimonialsPage() {
             type="file"
             accept="image/*,video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"
             className="hidden"
+            disabled={submitting}
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}
           />
           <button
             type="button"
+            disabled={submitting}
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-300/10 px-5 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-300/20"
+            className="inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-300/10 px-5 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <ImagePlus className="h-4 w-4" />
             {file ? `Selected: ${file.name}` : "Choose photo or video"}
@@ -236,9 +262,10 @@ export default function AdminTestimonialsPage() {
         </label>
         <button
           type="submit"
-          className="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-[#031018] md:col-span-2 md:w-fit"
+          disabled={submitting}
+          className="rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-[#031018] disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2 md:w-fit"
         >
-          Publish review
+          {submitting ? "Working…" : "Publish review"}
         </button>
       </form>
 

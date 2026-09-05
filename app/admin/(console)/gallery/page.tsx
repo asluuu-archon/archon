@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { UploadedMedia } from "@/components/media/UploadedMedia";
+import { prepareMediaForUpload, prepareMediaListForUpload } from "@/lib/uploads/prepare-media";
 
 type GalleryItem = {
   id: string;
@@ -31,6 +32,7 @@ export default function AdminGalleryPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileRef = useRef<HTMLInputElement>(null);
   const captionRef = useRef(caption);
+  const uploadingRef = useRef(false);
 
   useEffect(() => {
     captionRef.current = caption;
@@ -49,19 +51,23 @@ export default function AdminGalleryPage() {
 
   async function uploadFiles(fileList: FileList | null) {
     if (!fileList || fileList.length === 0) return;
+    if (uploadingRef.current) return;
 
-    const selected = Array.from(fileList);
+    uploadingRef.current = true;
     setUploading(true);
     setError("");
-    setMessage(`Uploading ${selected.length} file(s)...`);
-
-    const formData = new FormData();
-    selected.forEach((file) => formData.append("files", file));
-    if (captionRef.current.trim()) {
-      formData.append("caption", captionRef.current.trim());
-    }
+    setMessage(`Preparing ${fileList.length} file(s)…`);
 
     try {
+      const selected = await prepareMediaListForUpload(Array.from(fileList), setMessage);
+      setMessage(`Uploading ${selected.length} file(s)…`);
+
+      const formData = new FormData();
+      selected.forEach((file) => formData.append("files", file));
+      if (captionRef.current.trim()) {
+        formData.append("caption", captionRef.current.trim());
+      }
+
       const response = await fetch("/api/admin/gallery", {
         method: "POST",
         body: formData,
@@ -90,6 +96,7 @@ export default function AdminGalleryPage() {
       setError("Upload failed. Please try again.");
       setMessage("");
     } finally {
+      uploadingRef.current = false;
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
@@ -103,16 +110,20 @@ export default function AdminGalleryPage() {
   }
 
   async function saveEdit() {
-    if (!editing) return;
+    if (!editing || savingEdit) return;
     setSavingEdit(true);
     setError("");
-
-    const formData = new FormData();
-    formData.append("id", editing.id);
-    formData.append("caption", editCaption);
-    if (editFile) formData.append("file", editFile);
+    setMessage("Saving…");
 
     try {
+      const formData = new FormData();
+      formData.append("id", editing.id);
+      formData.append("caption", editCaption);
+      if (editFile) {
+        const prepared = await prepareMediaForUpload(editFile, setMessage);
+        formData.append("file", prepared);
+      }
+
       const response = await fetch("/api/admin/gallery", {
         method: "PATCH",
         body: formData,
@@ -120,6 +131,7 @@ export default function AdminGalleryPage() {
       const data = (await response.json()) as { error?: string };
       if (!response.ok) {
         setError(data.error ?? "Update failed.");
+        setMessage("");
         return;
       }
       setMessage("Gallery item updated.");
@@ -127,6 +139,7 @@ export default function AdminGalleryPage() {
       await loadItems();
     } catch {
       setError("Update failed. Please try again.");
+      setMessage("");
     } finally {
       setSavingEdit(false);
     }
@@ -143,9 +156,9 @@ export default function AdminGalleryPage() {
   return (
     <div>
       <h1 className="text-3xl font-bold">Gallery</h1>
-      <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
-        Click Add, select one or many photos/videos — they upload right away. You can add more any
-        time.
+      <p className="mt-2 text-sm text-slate-400">
+        Photos stay full quality. Videos are compressed in the browser before upload for faster
+        publishing.
       </p>
 
       <div className="mt-8 space-y-5 rounded-[2rem] border border-white/10 p-6">
@@ -155,6 +168,7 @@ export default function AdminGalleryPage() {
           accept="image/*,video/mp4,video/webm,video/quicktime"
           multiple
           className="hidden"
+          disabled={uploading}
           onChange={(event) => void uploadFiles(event.target.files)}
         />
 
@@ -173,11 +187,14 @@ export default function AdminGalleryPage() {
         <button
           type="button"
           disabled={uploading}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => {
+            if (uploadingRef.current) return;
+            fileInputRef.current?.click();
+          }}
           className="inline-flex items-center gap-2 rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-[#031018] transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Plus className="h-4 w-4" />
-          {uploading ? "Uploading..." : "Add photos / videos"}
+          {uploading ? "Working…" : "Add photos / videos"}
         </button>
       </div>
 
@@ -228,35 +245,36 @@ export default function AdminGalleryPage() {
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#020611]/75 px-4 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-[2rem] border border-white/10 bg-[#07111f] p-6">
             <h2 className="text-xl font-semibold text-white">Edit gallery item</h2>
-            <label className="mt-5 block">
-              <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">
-                Caption
-              </span>
+            <div className="mt-5 space-y-4">
               <input
                 value={editCaption}
                 onChange={(event) => setEditCaption(event.target.value)}
+                placeholder="Caption"
                 className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
               />
-            </label>
-            <input
-              ref={editFileRef}
-              type="file"
-              accept="image/*,video/mp4,video/webm,video/quicktime"
-              className="hidden"
-              onChange={(event) => setEditFile(event.target.files?.[0] ?? null)}
-            />
-            <button
-              type="button"
-              onClick={() => editFileRef.current?.click()}
-              className="mt-4 inline-flex rounded-full border border-cyan-300/40 px-5 py-2.5 text-sm text-cyan-200"
-            >
-              {editFile ? `Replace with: ${editFile.name}` : "Replace photo / video"}
-            </button>
+              <input
+                ref={editFileRef}
+                type="file"
+                accept="image/*,video/mp4,video/webm,video/quicktime"
+                className="hidden"
+                disabled={savingEdit}
+                onChange={(event) => setEditFile(event.target.files?.[0] ?? null)}
+              />
+              <button
+                type="button"
+                disabled={savingEdit}
+                onClick={() => editFileRef.current?.click()}
+                className="inline-flex rounded-full border border-cyan-300/40 px-5 py-2.5 text-sm text-cyan-200 disabled:opacity-60"
+              >
+                {editFile ? `Replace with: ${editFile.name}` : "Replace photo or video"}
+              </button>
+            </div>
             <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"
+                disabled={savingEdit}
                 onClick={() => setEditing(null)}
-                className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-slate-300"
+                className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-slate-300 disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -266,7 +284,7 @@ export default function AdminGalleryPage() {
                 onClick={() => void saveEdit()}
                 className="rounded-full bg-cyan-300 px-5 py-2.5 text-sm font-semibold text-[#031018] disabled:opacity-60"
               >
-                {savingEdit ? "Saving..." : "Save changes"}
+                {savingEdit ? "Saving…" : "Save changes"}
               </button>
             </div>
           </div>

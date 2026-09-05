@@ -77,8 +77,11 @@ async function ensureMediaBucket(url: string, key: string) {
 function buildObjectPath(folder: UploadFolder, file: File, mediaType: MediaKind) {
   const rawExt = file.name.split(".").pop()?.toLowerCase();
   const typeExt = file.type.split("/")[1]?.replace("jpeg", "jpg").replace("quicktime", "mov");
+  const preferredVideoExt = file.type.includes("webm") ? "webm" : "mp4";
   const ext =
-    rawExt && rawExt.length <= 5 ? rawExt : typeExt ?? (mediaType === "video" ? "mp4" : "jpg");
+    rawExt && rawExt.length <= 5
+      ? rawExt
+      : typeExt ?? (mediaType === "video" ? preferredVideoExt : "jpg");
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}.${ext}`;
   return `${folder}/${filename}`;
 }
@@ -130,10 +133,13 @@ export async function saveUpload(
   const body = Buffer.from(await file.arrayBuffer());
 
   const uploadResponse = await fetch(
-    `${config.url}/storage/v1/object/${BUCKET}/${objectPath}`,
+    `${config.url}/storage/v1/object/${BUCKET}/${objectPath}?cacheControl=31536000`,
     {
       method: "POST",
-      headers: storageHeaders(config.key, contentType),
+      headers: {
+        ...storageHeaders(config.key, contentType),
+        "x-upsert": "false",
+      },
       body,
     }
   );

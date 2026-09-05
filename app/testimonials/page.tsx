@@ -1,5 +1,6 @@
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import { TestimonialsMediaGallery } from "@/components/testimonials/TestimonialsMediaGallery";
 import { getPublishedTestimonials } from "@/lib/content/public-content";
 
 export const dynamic = "force-dynamic";
@@ -26,33 +27,7 @@ export default async function TestimonialsPage() {
             promises.
           </p>
 
-          {items.length === 0 ? (
-            <p className="mt-16 rounded-[2rem] border border-white/10 bg-[#07111f]/70 p-8 text-slate-400">
-              Testimonials will appear here once added from the admin dashboard.
-            </p>
-          ) : (
-            <div className="mt-16 space-y-6">
-              {items.map((item) => (
-                <article
-                  key={item.id}
-                  className="rounded-[2rem] border border-white/10 bg-[#07111f]/70 p-8"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h2 className="text-xl font-semibold text-white">{item.authorName}</h2>
-                      <p className="mt-1 text-sm text-cyan-300">
-                        {[item.authorRole, item.company].filter(Boolean).join(" · ")}
-                      </p>
-                    </div>
-                    <span className="rounded-full border border-cyan-300/20 px-3 py-1 text-xs text-cyan-300">
-                      {item.rating}/5
-                    </span>
-                  </div>
-                  <p className="mt-5 text-base leading-8 text-slate-300">{item.content}</p>
-                </article>
-              ))}
-            </div>
-          )}
+          <TestimonialsMediaGallery items={items} />
         </div>
       </section>
       <Footer />

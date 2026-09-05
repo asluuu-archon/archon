@@ -31,10 +31,11 @@ model GalleryImage {
 
 model Placement {
   id          String   @id @default(cuid())
-  imageUrl    String
-  companyName String
+  imageUrl    String?
+  mediaType   String   @default("image")
+  companyName String   @default("")
   salary      String?
-  course      String
+  course      String   @default("")
   sortOrder   Int      @default(0)
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -43,10 +44,12 @@ model Placement {
 
 model Testimonial {
   id         String   @id @default(cuid())
-  authorName String
+  authorName String   @default("")
   authorRole String?
   company    String?
-  content    String
+  content    String   @default("")
+  mediaUrl   String?
+  mediaType  String?
   rating     Int      @default(5)
   sortOrder  Int      @default(0)
   published  Boolean  @default(true)

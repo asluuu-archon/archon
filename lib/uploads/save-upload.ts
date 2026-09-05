@@ -8,6 +8,7 @@ const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif
 const VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/quicktime", "video/x-m4v"]);
 
 export type MediaKind = "image" | "video";
+export type UploadFolder = "gallery" | "placements" | "testimonials";
 
 export function detectMediaKind(file: File): MediaKind | null {
   if (IMAGE_TYPES.has(file.type)) return "image";
@@ -17,16 +18,12 @@ export function detectMediaKind(file: File): MediaKind | null {
 
 export async function saveUpload(
   file: File,
-  folder: "gallery" | "placements"
+  folder: UploadFolder
 ): Promise<{ url: string; mediaType: MediaKind }> {
   const mediaType = detectMediaKind(file);
 
   if (!mediaType) {
     throw new Error("Only images (JPEG, PNG, WebP, GIF) and videos (MP4, WebM, MOV) are allowed");
-  }
-
-  if (folder === "placements" && mediaType !== "image") {
-    throw new Error("Placement uploads must be images");
   }
 
   const maxBytes = mediaType === "video" ? VIDEO_MAX_BYTES : IMAGE_MAX_BYTES;
@@ -40,7 +37,8 @@ export async function saveUpload(
 
   const rawExt = file.name.split(".").pop()?.toLowerCase();
   const typeExt = file.type.split("/")[1]?.replace("jpeg", "jpg").replace("quicktime", "mov");
-  const ext = rawExt && rawExt.length <= 5 ? rawExt : typeExt ?? (mediaType === "video" ? "mp4" : "jpg");
+  const ext =
+    rawExt && rawExt.length <= 5 ? rawExt : typeExt ?? (mediaType === "video" ? "mp4" : "jpg");
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}.${ext}`;
   const uploadDir = path.join(process.cwd(), "public", "uploads", folder);
   await mkdir(uploadDir, { recursive: true });

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { requireAdminSession, unauthorizedResponse } from "@/lib/auth/guard";
 import { prisma } from "@/lib/db/prisma";
+import { saveUpload } from "@/lib/uploads/save-upload";
 
 export async function GET() {
   if (!(await requireAdminSession())) return unauthorizedResponse();
@@ -16,72 +17,109 @@ export async function GET() {
 export async function POST(request: Request) {
   if (!(await requireAdminSession())) return unauthorizedResponse();
 
-  const body = (await request.json()) as {
-    authorName?: string;
-    authorRole?: string;
-    company?: string;
-    content?: string;
-    rating?: number;
-  };
+  try {
+    const formData = await request.formData();
+    const authorName = String(formData.get("authorName") ?? "").trim();
+    const authorRole = String(formData.get("authorRole") ?? "").trim() || null;
+    const company = String(formData.get("company") ?? "").trim() || null;
+    const content = String(formData.get("content") ?? "").trim();
+    const ratingRaw = Number(formData.get("rating") ?? 5);
+    const rating = Number.isFinite(ratingRaw)
+      ? Math.min(5, Math.max(1, ratingRaw))
+      : 5;
+    const file = formData.get("file");
 
-  const authorName = body.authorName?.trim();
-  const content = body.content?.trim();
+    let mediaUrl: string | null = null;
+    let mediaType: string | null = null;
 
-  if (!authorName || !content) {
+    if (file instanceof File && file.size > 0) {
+      const uploaded = await saveUpload(file, "testimonials");
+      mediaUrl = uploaded.url;
+      mediaType = uploaded.mediaType;
+    }
+
+    if (!mediaUrl && !authorName && !content && !authorRole && !company) {
+      return NextResponse.json(
+        { error: "Add a photo/video or at least one review detail" },
+        { status: 400 }
+      );
+    }
+
+    const item = await prisma.testimonial.create({
+      data: {
+        authorName,
+        authorRole,
+        company,
+        content,
+        rating,
+        mediaUrl,
+        mediaType,
+      },
+    });
+
+    return NextResponse.json(item, { status: 201 });
+  } catch (error) {
+    console.error("Testimonial create failed:", error);
     return NextResponse.json(
-      { error: "Author name and review text are required" },
+      { error: error instanceof Error ? error.message : "Could not save review" },
       { status: 400 }
     );
   }
-
-  const item = await prisma.testimonial.create({
-    data: {
-      authorName,
-      authorRole: body.authorRole?.trim() || null,
-      company: body.company?.trim() || null,
-      content,
-      rating: Math.min(5, Math.max(1, body.rating ?? 5)),
-    },
-  });
-
-  return NextResponse.json(item, { status: 201 });
 }
 
 export async function PATCH(request: Request) {
   if (!(await requireAdminSession())) return unauthorizedResponse();
 
-  const body = (await request.json()) as {
-    id?: string;
-    authorName?: string;
-    authorRole?: string;
-    company?: string;
-    content?: string;
-    rating?: number;
-  };
+  try {
+    const formData = await request.formData();
+    const id = String(formData.get("id") ?? "").trim();
+    const authorName = String(formData.get("authorName") ?? "").trim();
+    const authorRole = String(formData.get("authorRole") ?? "").trim() || null;
+    const company = String(formData.get("company") ?? "").trim() || null;
+    const content = String(formData.get("content") ?? "").trim();
+    const ratingRaw = Number(formData.get("rating") ?? 5);
+    const rating = Number.isFinite(ratingRaw)
+      ? Math.min(5, Math.max(1, ratingRaw))
+      : 5;
+    const file = formData.get("file");
+    const clearMedia = String(formData.get("clearMedia") ?? "") === "1";
 
-  const id = body.id?.trim();
-  const authorName = body.authorName?.trim();
-  const content = body.content?.trim();
+    if (!id) {
+      return NextResponse.json({ error: "id is required" }, { status: 400 });
+    }
 
-  if (!id || !authorName || !content) {
+    const data: {
+      authorName: string;
+      authorRole: string | null;
+      company: string | null;
+      content: string;
+      rating: number;
+      mediaUrl?: string | null;
+      mediaType?: string | null;
+    } = { authorName, authorRole, company, content, rating };
+
+    if (file instanceof File && file.size > 0) {
+      const uploaded = await saveUpload(file, "testimonials");
+      data.mediaUrl = uploaded.url;
+      data.mediaType = uploaded.mediaType;
+    } else if (clearMedia) {
+      data.mediaUrl = null;
+      data.mediaType = null;
+    }
+
+    const item = await prisma.testimonial.update({
+      where: { id },
+      data,
+    });
+
+    return NextResponse.json(item);
+  } catch (error) {
+    console.error("Testimonial update failed:", error);
     return NextResponse.json(
-      { error: "id, author name and review text are required" },
-      { status: 400 }
+      { error: error instanceof Error ? error.message : "Update failed" },
+      { status: 500 }
     );
   }
-
-  const item = await prisma.testimonial.update({
-    where: { id },
-    data: {
-      authorName,
-      authorRole: body.authorRole?.trim() || null,
-      company: body.company?.trim() || null,
-      content,
-      rating: Math.min(5, Math.max(1, body.rating ?? 5)),
-    },
-  });
-
-  return NextResponse.json(item);
 }
 
 export async function DELETE(request: Request) {

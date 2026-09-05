@@ -1,7 +1,6 @@
-import Image from "next/image";
-
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import { PlacementsMediaGallery } from "@/components/placements/PlacementsMediaGallery";
 import { getPublishedPlacements } from "@/lib/content/public-content";
 
 export const dynamic = "force-dynamic";
@@ -27,37 +26,7 @@ export default async function PlacementsPage() {
             Learners who moved from training into roles that match the skills they built with us.
           </p>
 
-          {items.length === 0 ? (
-            <p className="mt-16 rounded-[2rem] border border-white/10 bg-[#07111f]/70 p-8 text-slate-400">
-              Placement stories will appear here once added from the admin dashboard.
-            </p>
-          ) : (
-            <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((item) => (
-                <article
-                  key={item.id}
-                  className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70"
-                >
-                  <div className="relative aspect-[4/5]">
-                    <Image
-                      src={item.imageUrl}
-                      alt={`Placement at ${item.companyName}`}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h2 className="text-xl font-semibold text-white">{item.companyName}</h2>
-                    <p className="mt-2 text-sm text-cyan-300">{item.course}</p>
-                    {item.salary ? (
-                      <p className="mt-3 text-sm text-slate-400">{item.salary}</p>
-                    ) : null}
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
+          <PlacementsMediaGallery items={items} />
         </div>
       </section>
       <Footer />

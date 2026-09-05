@@ -5,10 +5,12 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { ImagePlus } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { isVideoMedia } from "@/lib/media";
 
 type PlacementItem = {
   id: string;
-  imageUrl: string;
+  imageUrl: string | null;
+  mediaType: string;
   companyName: string;
   salary: string | null;
   course: string;
@@ -61,20 +63,22 @@ export default function AdminPlacementsPage() {
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
-    if (!file) {
-      setError("Please choose a photo first.");
-      return;
-    }
-
     setError("");
+    setMessage("");
+
     const salary = salaryAmount.trim() ? formatSalaryLpa(salaryAmount) : null;
     if (salaryAmount.trim() && !salary) {
       setError("Enter a valid salary amount, e.g. 4.5");
       return;
     }
 
+    if (!file && !companyName.trim() && !course.trim() && !salary) {
+      setError("Add a photo/video or at least one placement detail.");
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("file", file);
+    if (file) formData.append("file", file);
     formData.append("companyName", companyName);
     formData.append("course", course);
     if (salary) formData.append("salary", salary);
@@ -83,16 +87,20 @@ export default function AdminPlacementsPage() {
       method: "POST",
       body: formData,
     });
+    const data = (await response.json()) as { error?: string };
 
-    setMessage(response.ok ? "Placement added." : "Could not save placement.");
-    if (response.ok) {
-      setCompanyName("");
-      setCourse("");
-      setSalaryAmount("");
-      setFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      await loadItems();
+    if (!response.ok) {
+      setError(data.error ?? "Could not save placement.");
+      return;
     }
+
+    setMessage("Placement added.");
+    setCompanyName("");
+    setCourse("");
+    setSalaryAmount("");
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    await loadItems();
   }
 
   function startEdit(item: PlacementItem) {
@@ -162,12 +170,12 @@ export default function AdminPlacementsPage() {
       >
         <div className="md:col-span-2">
           <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">
-            Photo
+            Photo or video (optional)
           </span>
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"
             className="hidden"
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}
           />
@@ -177,29 +185,27 @@ export default function AdminPlacementsPage() {
             className="inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-300/10 px-5 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-300/20"
           >
             <ImagePlus className="h-4 w-4" />
-            {file ? `Selected: ${file.name}` : "Choose placement photo"}
+            {file ? `Selected: ${file.name}` : "Choose photo or video"}
           </button>
         </div>
         <label className="block">
           <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">
-            Company name
+            Company name (optional)
           </span>
           <input
             value={companyName}
             onChange={(event) => setCompanyName(event.target.value)}
             className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
-            required
           />
         </label>
         <label className="block">
           <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">
-            Course taken
+            Course taken (optional)
           </span>
           <input
             value={course}
             onChange={(event) => setCourse(event.target.value)}
             className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
-            required
           />
         </label>
         <label className="block md:col-span-2">
@@ -238,12 +244,35 @@ export default function AdminPlacementsPage() {
             key={item.id}
             className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#07111f]/70"
           >
-            <div className="relative aspect-[4/5]">
-              <Image src={item.imageUrl} alt={item.companyName} fill className="object-cover" />
-            </div>
+            {item.imageUrl ? (
+              <div className="relative aspect-[4/5] bg-black/40">
+                {isVideoMedia(item) ? (
+                  <video
+                    src={item.imageUrl}
+                    controls
+                    className="h-full w-full object-cover"
+                    preload="metadata"
+                  />
+                ) : (
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.companyName || "Placement"}
+                    fill
+                    className="object-cover"
+                  />
+                )}
+              </div>
+            ) : null}
             <div className="p-4">
-              <h2 className="text-lg font-semibold text-white">{item.companyName}</h2>
-              <p className="mt-1 text-sm text-cyan-300">{item.course}</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                {item.imageUrl ? (isVideoMedia(item) ? "Video" : "Photo") : "Details only"}
+              </p>
+              {item.companyName ? (
+                <h2 className="mt-2 text-lg font-semibold text-white">{item.companyName}</h2>
+              ) : null}
+              {item.course ? (
+                <p className="mt-1 text-sm text-cyan-300">{item.course}</p>
+              ) : null}
               {item.salary ? <p className="mt-2 text-sm text-slate-400">{item.salary}</p> : null}
               <div className="mt-3 flex gap-4">
                 <button
@@ -298,7 +327,7 @@ export default function AdminPlacementsPage() {
               <input
                 ref={editFileRef}
                 type="file"
-                accept="image/*"
+                accept="image/*,video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"
                 className="hidden"
                 onChange={(event) => setEditFile(event.target.files?.[0] ?? null)}
               />
@@ -307,7 +336,9 @@ export default function AdminPlacementsPage() {
                 onClick={() => editFileRef.current?.click()}
                 className="inline-flex rounded-full border border-cyan-300/40 px-5 py-2.5 text-sm text-cyan-200"
               >
-                {editFile ? `Replace with: ${editFile.name}` : "Replace photo"}
+                {editFile
+                  ? `Replace with: ${editFile.name}`
+                  : "Replace photo or video"}
               </button>
             </div>
             <div className="mt-6 flex justify-end gap-3">

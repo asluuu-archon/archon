@@ -18,6 +18,7 @@ export async function getPublishedGallery() {
       prisma.galleryImage.findMany({
         where: { published: true },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+        include: { folder: true },
       }),
     []
   );

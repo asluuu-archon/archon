@@ -4,7 +4,8 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { ImagePlus } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { UploadedMedia } from "@/components/media/UploadedMedia";
+import { MediaPlaybackProvider } from "@/components/media/MediaPlayback";
+import { OrientedMedia } from "@/components/media/OrientedMedia";
 import { isVideoMedia } from "@/lib/media";
 import { prepareMediaForUpload } from "@/lib/uploads/prepare-media";
 
@@ -17,6 +18,7 @@ type TestimonialItem = {
   rating: number;
   mediaUrl: string | null;
   mediaType: string | null;
+  orientation?: string | null;
 };
 
 export default function AdminTestimonialsPage() {
@@ -79,7 +81,8 @@ export default function AdminTestimonialsPage() {
       const formData = new FormData();
       if (file) {
         const prepared = await prepareMediaForUpload(file, setMessage);
-        formData.append("file", prepared);
+        formData.append("file", prepared.file);
+        formData.append("orientation", prepared.orientation);
       }
       formData.append("authorName", authorName);
       formData.append("authorRole", authorRole);
@@ -143,7 +146,8 @@ export default function AdminTestimonialsPage() {
     formData.append("rating", String(editRating));
     if (editFile) {
       const prepared = await prepareMediaForUpload(editFile, setMessage);
-      formData.append("file", prepared);
+      formData.append("file", prepared.file);
+      formData.append("orientation", prepared.orientation);
     }
 
     try {
@@ -272,6 +276,7 @@ export default function AdminTestimonialsPage() {
       {message ? <p className="mt-4 text-sm text-cyan-300">{message}</p> : null}
       {error ? <p className="mt-4 text-sm text-rose-300">{error}</p> : null}
 
+      <MediaPlaybackProvider>
       <div className="mt-10 space-y-4">
         {items.map((item) => (
           <article
@@ -279,14 +284,12 @@ export default function AdminTestimonialsPage() {
             className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#07111f]/70"
           >
             {item.mediaUrl ? (
-              <div className="relative mx-auto aspect-[9/16] w-full max-w-sm bg-black/40">
-                <UploadedMedia
-                  src={item.mediaUrl}
-                  mediaType={item.mediaType}
-                  alt={item.authorName || "Review"}
-                  fill
-                />
-              </div>
+              <OrientedMedia
+                src={item.mediaUrl}
+                mediaType={item.mediaType}
+                orientation={item.orientation}
+                alt={item.authorName || "Review"}
+              />
             ) : null}
             <div className="p-6">
               <div className="flex items-start justify-between gap-4">
@@ -334,6 +337,7 @@ export default function AdminTestimonialsPage() {
           </article>
         ))}
       </div>
+      </MediaPlaybackProvider>
 
       {editing ? (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#020611]/75 px-4 backdrop-blur-sm">

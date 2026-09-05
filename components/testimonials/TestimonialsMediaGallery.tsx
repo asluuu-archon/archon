@@ -1,7 +1,8 @@
 "use client";
 
+import { MediaPlaybackProvider } from "@/components/media/MediaPlayback";
 import { MediaTabs } from "@/components/media/MediaTabs";
-import { UploadedMedia } from "@/components/media/UploadedMedia";
+import { OrientedMedia } from "@/components/media/OrientedMedia";
 
 export type PublicTestimonial = {
   id: string;
@@ -12,6 +13,7 @@ export type PublicTestimonial = {
   rating: number;
   mediaUrl: string | null;
   mediaType: string | null;
+  orientation?: string | null;
 };
 
 export function TestimonialsMediaGallery({
@@ -31,22 +33,20 @@ export function TestimonialsMediaGallery({
   }
 
   return (
-    <>
+    <MediaPlaybackProvider>
       <MediaTabs
         items={mediaItems}
         emptyMessage="No review {tab} yet. Switch tabs or check back soon."
-        className="mt-10 grid gap-6 sm:grid-cols-2"
+        className="mt-10 columns-1 gap-4 sm:columns-2"
         renderItem={(item) => (
           <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70">
             {item.mediaUrl ? (
-              <div className="relative mx-auto aspect-[9/16] w-full max-w-sm bg-black/40">
-                <UploadedMedia
-                  src={item.mediaUrl}
-                  mediaType={item.mediaType}
-                  alt={item.authorName || "Archon review"}
-                  fill
-                />
-              </div>
+              <OrientedMedia
+                src={item.mediaUrl}
+                mediaType={item.mediaType}
+                orientation={item.orientation}
+                alt={item.authorName || "Archon review"}
+              />
             ) : null}
             {(item.authorName ||
               item.authorRole ||
@@ -111,6 +111,6 @@ export function TestimonialsMediaGallery({
           ))}
         </div>
       ) : null}
-    </>
+    </MediaPlaybackProvider>
   );
 }

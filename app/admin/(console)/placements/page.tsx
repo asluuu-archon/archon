@@ -4,7 +4,8 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { ImagePlus } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { UploadedMedia } from "@/components/media/UploadedMedia";
+import { MediaPlaybackProvider } from "@/components/media/MediaPlayback";
+import { OrientedMedia } from "@/components/media/OrientedMedia";
 import { isVideoMedia } from "@/lib/media";
 import { prepareMediaForUpload } from "@/lib/uploads/prepare-media";
 
@@ -12,6 +13,7 @@ type PlacementItem = {
   id: string;
   imageUrl: string | null;
   mediaType: string;
+  orientation?: string | null;
   companyName: string;
   salary: string | null;
   course: string;
@@ -89,7 +91,8 @@ export default function AdminPlacementsPage() {
       const formData = new FormData();
       if (file) {
         const prepared = await prepareMediaForUpload(file, setMessage);
-        formData.append("file", prepared);
+        formData.append("file", prepared.file);
+        formData.append("orientation", prepared.orientation);
       }
       formData.append("companyName", companyName);
       formData.append("course", course);
@@ -152,7 +155,8 @@ export default function AdminPlacementsPage() {
     if (salary) formData.append("salary", salary);
     if (editFile) {
       const prepared = await prepareMediaForUpload(editFile, setMessage);
-      formData.append("file", prepared);
+      formData.append("file", prepared.file);
+      formData.append("orientation", prepared.orientation);
     }
 
     try {
@@ -265,6 +269,7 @@ export default function AdminPlacementsPage() {
       {message ? <p className="mt-4 text-sm text-cyan-300">{message}</p> : null}
       {error ? <p className="mt-4 text-sm text-rose-300">{error}</p> : null}
 
+      <MediaPlaybackProvider>
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
           <article
@@ -272,14 +277,12 @@ export default function AdminPlacementsPage() {
             className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#07111f]/70"
           >
             {item.imageUrl ? (
-              <div className="relative mx-auto aspect-[9/16] w-full max-w-sm bg-black/40">
-                <UploadedMedia
-                  src={item.imageUrl}
-                  mediaType={item.mediaType}
-                  alt={item.companyName || "Placement"}
-                  fill
-                />
-              </div>
+              <OrientedMedia
+                src={item.imageUrl}
+                mediaType={item.mediaType}
+                orientation={item.orientation}
+                alt={item.companyName || "Placement"}
+              />
             ) : null}
             <div className="p-4">
               <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">
@@ -312,6 +315,7 @@ export default function AdminPlacementsPage() {
           </article>
         ))}
       </div>
+      </MediaPlaybackProvider>
 
       {editing ? (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[#020611]/75 px-4 backdrop-blur-sm">

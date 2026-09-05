@@ -4,10 +4,17 @@
  * size/bitrate so uploads and playback stay fast.
  */
 
+import type { MediaOrientation } from "@/lib/media";
+
 const VIDEO_SKIP_UNDER_BYTES = 5 * 1024 * 1024;
 const MAX_LONG_EDGE = 1280;
 const TARGET_BITRATE = 2_800_000;
 const MAX_COMPRESS_SECONDS = 90;
+
+export type PreparedMedia = {
+  file: File;
+  orientation: MediaOrientation;
+};
 
 function isVideoFile(file: File) {
   return file.type.startsWith("video/") || /\.(mp4|webm|mov|m4v)$/i.test(file.name);
@@ -148,16 +155,61 @@ async function compressVideoFile(file: File): Promise<File> {
   }
 }
 
+async function detectImageOrientation(file: File): Promise<MediaOrientation> {
+  const url = URL.createObjectURL(file);
+  try {
+    const size = await new Promise<{ width: number; height: number }>((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      img.onerror = () => reject(new Error("Could not read image"));
+      img.src = url;
+    });
+    return size.width >= size.height ? "landscape" : "portrait";
+  } catch {
+    return "portrait";
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function detectVideoOrientation(file: File): Promise<MediaOrientation> {
+  try {
+    const video = await loadVideo(file);
+    const orientation =
+      (video.videoWidth || 0) >= (video.videoHeight || 0) ? "landscape" : "portrait";
+    const objectUrl = (video as HTMLVideoElement & { __objectUrl?: string }).__objectUrl;
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+    return orientation;
+  } catch {
+    return "portrait";
+  }
+}
+
+export async function detectMediaOrientation(file: File): Promise<MediaOrientation> {
+  if (isVideoFile(file)) {
+    return detectVideoOrientation(file);
+  }
+  if (file.type.startsWith("image/")) {
+    return detectImageOrientation(file);
+  }
+  return "portrait";
+}
+
 export async function prepareMediaForUpload(
   file: File,
   onStatus?: (message: string) => void
-): Promise<File> {
+): Promise<PreparedMedia> {
+  const orientation = await detectMediaOrientation(file);
+
   if (!isVideoFile(file)) {
-    return file;
+    return { file, orientation };
   }
 
   if (file.size <= VIDEO_SKIP_UNDER_BYTES) {
-    return file;
+    return { file, orientation };
   }
 
   onStatus?.("Compressing video for faster upload…");
@@ -173,18 +225,19 @@ export async function prepareMediaForUpload(
     } else {
       onStatus?.("Uploading…");
     }
-    return compressed;
+    // Orientation from the original file; compression preserves aspect.
+    return { file: compressed, orientation };
   } catch {
     onStatus?.("Compression skipped. Uploading original…");
-    return file;
+    return { file, orientation };
   }
 }
 
 export async function prepareMediaListForUpload(
   files: File[],
   onStatus?: (message: string) => void
-): Promise<File[]> {
-  const prepared: File[] = [];
+): Promise<PreparedMedia[]> {
+  const prepared: PreparedMedia[] = [];
   for (let index = 0; index < files.length; index += 1) {
     const file = files[index];
     if (files.length > 1 && isVideoFile(file)) {

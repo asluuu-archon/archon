@@ -43,6 +43,10 @@ export async function POST(request: Request) {
 
     let imageUrl: string | null = null;
     let mediaType = "image";
+    let orientation = String(formData.get("orientation") ?? "portrait").trim();
+    if (orientation !== "landscape" && orientation !== "portrait") {
+      orientation = "portrait";
+    }
 
     if (file instanceof File && file.size > 0) {
       const uploaded = await saveUpload(file, "placements");
@@ -61,6 +65,7 @@ export async function POST(request: Request) {
       data: {
         imageUrl,
         mediaType,
+        orientation,
         companyName,
         course,
         salary: salaryResult,
@@ -102,12 +107,18 @@ export async function PATCH(request: Request) {
       salary: string | null;
       imageUrl?: string | null;
       mediaType?: string;
+      orientation?: string;
     } = { companyName, course, salary: salaryResult };
 
     if (file instanceof File && file.size > 0) {
       const uploaded = await saveUpload(file, "placements");
       data.imageUrl = uploaded.url;
       data.mediaType = uploaded.mediaType;
+      const orientation = String(formData.get("orientation") ?? "portrait").trim();
+      data.orientation =
+        orientation === "landscape" || orientation === "portrait"
+          ? orientation
+          : "portrait";
     } else if (clearMedia) {
       data.imageUrl = null;
       data.mediaType = "image";

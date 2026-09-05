@@ -64,7 +64,9 @@ export function MediaTabs<T extends MediaItem>({
       ) : (
         <div className={className}>
           {activeItems.map((item) => (
-            <div key={item.id}>{renderItem(item)}</div>
+            <div key={item.id} className="mb-4 break-inside-avoid">
+              {renderItem(item)}
+            </div>
           ))}
         </div>
       )}

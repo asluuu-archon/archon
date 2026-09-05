@@ -1,12 +1,14 @@
 "use client";
 
+import { MediaPlaybackProvider } from "@/components/media/MediaPlayback";
 import { MediaTabs } from "@/components/media/MediaTabs";
-import { UploadedMedia } from "@/components/media/UploadedMedia";
+import { OrientedMedia } from "@/components/media/OrientedMedia";
 
 export type PublicPlacement = {
   id: string;
   imageUrl: string | null;
   mediaType: string;
+  orientation?: string | null;
   companyName: string;
   salary: string | null;
   course: string;
@@ -25,25 +27,24 @@ export function PlacementsMediaGallery({ items }: { items: PublicPlacement[] }) 
   }
 
   return (
-    <>
+    <MediaPlaybackProvider>
       <MediaTabs
         items={mediaItems}
         emptyMessage="No placement {tab} yet. Switch tabs or check back soon."
+        className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3"
         renderItem={(item) => (
           <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70">
             {item.imageUrl ? (
-              <div className="relative mx-auto aspect-[9/16] w-full max-w-sm bg-black/40">
-                <UploadedMedia
-                  src={item.imageUrl}
-                  mediaType={item.mediaType}
-                  alt={
-                    item.companyName
-                      ? `Placement at ${item.companyName}`
-                      : "Archon placement"
-                  }
-                  fill
-                />
-              </div>
+              <OrientedMedia
+                src={item.imageUrl}
+                mediaType={item.mediaType}
+                orientation={item.orientation}
+                alt={
+                  item.companyName
+                    ? `Placement at ${item.companyName}`
+                    : "Archon placement"
+                }
+              />
             ) : null}
             {(item.companyName || item.course || item.salary) && (
               <div className="p-6">
@@ -85,6 +86,6 @@ export function PlacementsMediaGallery({ items }: { items: PublicPlacement[] }) 
           ))}
         </div>
       ) : null}
-    </>
+    </MediaPlaybackProvider>
   );
 }

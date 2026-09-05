@@ -31,11 +31,14 @@ export async function POST(request: Request) {
 
     let mediaUrl: string | null = null;
     let mediaType: string | null = null;
+    let orientation: string | null = null;
 
     if (file instanceof File && file.size > 0) {
       const uploaded = await saveUpload(file, "testimonials");
       mediaUrl = uploaded.url;
       mediaType = uploaded.mediaType;
+      const raw = String(formData.get("orientation") ?? "portrait").trim();
+      orientation = raw === "landscape" || raw === "portrait" ? raw : "portrait";
     }
 
     if (!mediaUrl && !authorName && !content && !authorRole && !company) {
@@ -54,6 +57,7 @@ export async function POST(request: Request) {
         rating,
         mediaUrl,
         mediaType,
+        orientation,
       },
     });
 
@@ -96,15 +100,19 @@ export async function PATCH(request: Request) {
       rating: number;
       mediaUrl?: string | null;
       mediaType?: string | null;
+      orientation?: string | null;
     } = { authorName, authorRole, company, content, rating };
 
     if (file instanceof File && file.size > 0) {
       const uploaded = await saveUpload(file, "testimonials");
       data.mediaUrl = uploaded.url;
       data.mediaType = uploaded.mediaType;
+      const raw = String(formData.get("orientation") ?? "portrait").trim();
+      data.orientation = raw === "landscape" || raw === "portrait" ? raw : "portrait";
     } else if (clearMedia) {
       data.mediaUrl = null;
       data.mediaType = null;
+      data.orientation = null;
     }
 
     const item = await prisma.testimonial.update({

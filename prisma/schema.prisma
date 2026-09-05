@@ -18,21 +18,36 @@ model User {
   updatedAt    DateTime @updatedAt
 }
 
+model GalleryFolder {
+  id        String         @id @default(cuid())
+  name      String         @unique
+  sortOrder Int            @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  images    GalleryImage[]
+}
+
 model GalleryImage {
-  id        String   @id @default(cuid())
-  imageUrl  String
-  mediaType String   @default("image")
-  caption   String?
-  sortOrder Int      @default(0)
-  published Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String         @id @default(cuid())
+  imageUrl    String
+  mediaType   String         @default("image")
+  orientation String         @default("portrait")
+  caption     String?
+  sortOrder   Int            @default(0)
+  published   Boolean        @default(true)
+  folderId    String?
+  folder      GalleryFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([folderId])
 }
 
 model Placement {
   id          String   @id @default(cuid())
   imageUrl    String?
   mediaType   String   @default("image")
+  orientation String   @default("portrait")
   companyName String   @default("")
   salary      String?
   course      String   @default("")
@@ -43,16 +58,17 @@ model Placement {
 }
 
 model Testimonial {
-  id         String   @id @default(cuid())
-  authorName String   @default("")
-  authorRole String?
-  company    String?
-  content    String   @default("")
-  mediaUrl   String?
-  mediaType  String?
-  rating     Int      @default(5)
-  sortOrder  Int      @default(0)
-  published  Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  authorName  String   @default("")
+  authorRole  String?
+  company     String?
+  content     String   @default("")
+  mediaUrl    String?
+  mediaType   String?
+  orientation String?
+  rating      Int      @default(5)
+  sortOrder   Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

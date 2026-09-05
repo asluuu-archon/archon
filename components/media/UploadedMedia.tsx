@@ -1,3 +1,5 @@
+"use client";
+
 import type { CSSProperties, MouseEvent } from "react";
 
 import { isVideoMedia } from "@/lib/media";

@@ -1,6 +1,6 @@
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import { UploadedMedia } from "@/components/media/UploadedMedia";
+import { GalleryMediaGrid } from "@/components/gallery/GalleryMediaGrid";
 import { getPublishedGallery } from "@/lib/content/public-content";
 
 export const dynamic = "force-dynamic";
@@ -26,32 +26,7 @@ export default async function GalleryPage() {
             Real moments from classrooms, client work, and the people building capability with us.
           </p>
 
-          {items.length === 0 ? (
-            <p className="mt-16 rounded-[2rem] border border-white/10 bg-[#07111f]/70 p-8 text-slate-400">
-              Gallery photos and videos will appear here once added from the admin dashboard.
-            </p>
-          ) : (
-            <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((item) => (
-                <article
-                  key={item.id}
-                  className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70"
-                >
-                  <div className="relative mx-auto aspect-[9/16] w-full max-w-sm bg-black/40">
-                    <UploadedMedia
-                      src={item.imageUrl}
-                      mediaType={item.mediaType}
-                      alt={item.caption ?? "Archon gallery image"}
-                      fill
-                    />
-                  </div>
-                  {item.caption ? (
-                    <p className="p-5 text-sm leading-7 text-slate-300">{item.caption}</p>
-                  ) : null}
-                </article>
-              ))}
-            </div>
-          )}
+          <GalleryMediaGrid items={items} />
         </div>
       </section>
       <Footer />

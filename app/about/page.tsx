@@ -12,6 +12,7 @@ import {
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { archonContact } from "@/lib/contact";
+import { partnerLogos } from "@/lib/partners";
 import { ORGANISATIONS_QUERY, TEAM_QUERY } from "@/lib/sanity.queries";
 import { safeSanityFetch } from "@/lib/sanity.safe";
 import type { Organisation, TeamMember } from "@/lib/sanity.types";
@@ -201,8 +202,7 @@ export default async function AboutPage() {
             </div>
           </section>
 
-          {organisations.length > 0 && (
-            <section className="mt-24" aria-labelledby="partners">
+          <section className="mt-24" aria-labelledby="partners">
               <div className="flex items-center gap-3 text-cyan-300">
                 <Building2 className="h-5 w-5" />
                 <p className="text-sm font-medium">Trusted relationships</p>
@@ -210,32 +210,68 @@ export default async function AboutPage() {
               <h2 id="partners" className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
                 Partners in practical progress.
               </h2>
-              <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {organisations.map((organisation) => (
-                  <article
-                    key={organisation._id}
-                    className="rounded-[1.5rem] border border-white/10 bg-white/[0.02] p-6"
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-400">
+                Organisations where Archon people have built delivery experience across enterprise
+                systems, banking, telecom and technology services.
+              </p>
+              <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {partnerLogos.map((partner) => (
+                  <li
+                    key={partner.name}
+                    className="flex h-28 items-center justify-center rounded-[1.5rem] border border-white/10 bg-white/[0.02] px-6 py-5"
                   >
-                    {organisation.logo ? (
-                      <img
-                        src={urlForSanityImage(organisation.logo).width(320).height(96).fit("max").auto("format").url()}
-                        alt={organisation.name}
-                        className="h-10 w-full object-contain object-left"
-                      />
-                    ) : (
-                      <div className="flex h-10 items-center text-sm font-semibold text-slate-200">
-                        {organisation.name}
-                      </div>
-                    )}
-                    <h3 className="mt-6 font-medium text-white">{organisation.name}</h3>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-500">
-                      {organisation.relationshipType}
-                    </p>
-                  </article>
+                    <span
+                      role="img"
+                      aria-label={partner.name}
+                      title={partner.name}
+                      className="block h-10 w-full max-w-[11rem] bg-slate-300 opacity-80 transition hover:opacity-100"
+                      style={{
+                        maskImage: `url(${partner.src})`,
+                        WebkitMaskImage: `url(${partner.src})`,
+                        maskRepeat: "no-repeat",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskPosition: "center",
+                        WebkitMaskPosition: "center",
+                        maskSize: "contain",
+                        WebkitMaskSize: "contain",
+                      }}
+                    />
+                  </li>
                 ))}
-              </div>
+              </ul>
+
+              {organisations.length > 0 ? (
+                <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {organisations.map((organisation) => (
+                    <article
+                      key={organisation._id}
+                      className="rounded-[1.5rem] border border-white/10 bg-white/[0.02] p-6"
+                    >
+                      {organisation.logo ? (
+                        <img
+                          src={urlForSanityImage(organisation.logo)
+                            .width(320)
+                            .height(96)
+                            .fit("max")
+                            .auto("format")
+                            .url()}
+                          alt={organisation.name}
+                          className="h-10 w-full object-contain object-left opacity-80 grayscale brightness-200 contrast-125"
+                        />
+                      ) : (
+                        <div className="flex h-10 items-center text-sm font-semibold text-slate-200">
+                          {organisation.name}
+                        </div>
+                      )}
+                      <h3 className="mt-6 font-medium text-white">{organisation.name}</h3>
+                      <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                        {organisation.relationshipType}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              ) : null}
             </section>
-          )}
 
           {team.length > 0 && (
             <section className="mt-24" aria-labelledby="team">

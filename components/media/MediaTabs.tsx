@@ -16,6 +16,7 @@ type MediaTabsProps<T extends MediaItem> = {
   emptyMessage: string;
   renderItem: (item: T) => ReactNode;
   className?: string;
+  defaultTab?: "videos" | "photos";
 };
 
 export function MediaTabs<T extends MediaItem>({
@@ -23,8 +24,9 @@ export function MediaTabs<T extends MediaItem>({
   emptyMessage,
   renderItem,
   className = "mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3",
+  defaultTab = "videos",
 }: MediaTabsProps<T>) {
-  const [tab, setTab] = useState<"videos" | "photos">("videos");
+  const [tab, setTab] = useState<"videos" | "photos">(defaultTab);
 
   const videos = useMemo(() => items.filter((item) => isVideoMedia(item)), [items]);
   const photos = useMemo(() => items.filter((item) => isImageMedia(item)), [items]);
@@ -35,17 +37,6 @@ export function MediaTabs<T extends MediaItem>({
       <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1">
         <button
           type="button"
-          onClick={() => setTab("videos")}
-          className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${
-            tab === "videos"
-              ? "bg-cyan-300 text-[#031018]"
-              : "text-slate-300 hover:text-white"
-          }`}
-        >
-          Videos{videos.length ? ` (${videos.length})` : ""}
-        </button>
-        <button
-          type="button"
           onClick={() => setTab("photos")}
           className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${
             tab === "photos"
@@ -53,7 +44,18 @@ export function MediaTabs<T extends MediaItem>({
               : "text-slate-300 hover:text-white"
           }`}
         >
-          Photos{photos.length ? ` (${photos.length})` : ""}
+          Photos
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("videos")}
+          className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${
+            tab === "videos"
+              ? "bg-cyan-300 text-[#031018]"
+              : "text-slate-300 hover:text-white"
+          }`}
+        >
+          Videos
         </button>
       </div>
 

@@ -229,3 +229,13 @@ img[draggable="false"] {
   user-select: none;
   -webkit-touch-callout: none;
 }
+
+/* Native <select> dropdowns: avoid white-on-white option text on Windows */
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: #07111f;
+  color: #f8fafc;
+}

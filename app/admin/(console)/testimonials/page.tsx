@@ -214,7 +214,7 @@ export default function AdminTestimonialsPage() {
           <input
             value={authorName}
             onChange={(event) => setAuthorName(event.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
           />
         </label>
         <label className="block">
@@ -224,7 +224,7 @@ export default function AdminTestimonialsPage() {
           <input
             value={authorRole}
             onChange={(event) => setAuthorRole(event.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
           />
         </label>
         <label className="block">
@@ -234,7 +234,7 @@ export default function AdminTestimonialsPage() {
           <input
             value={company}
             onChange={(event) => setCompany(event.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
           />
         </label>
         <label className="block">
@@ -244,7 +244,7 @@ export default function AdminTestimonialsPage() {
           <select
             value={rating}
             onChange={(event) => setRating(Number(event.target.value))}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
           >
             {[5, 4, 3, 2, 1].map((value) => (
               <option key={value} value={value}>
@@ -261,7 +261,7 @@ export default function AdminTestimonialsPage() {
             value={content}
             onChange={(event) => setContent(event.target.value)}
             rows={5}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
           />
         </label>
         <button
@@ -364,24 +364,24 @@ export default function AdminTestimonialsPage() {
                 value={editAuthorName}
                 onChange={(event) => setEditAuthorName(event.target.value)}
                 placeholder="Name"
-                className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+                className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
               />
               <input
                 value={editAuthorRole}
                 onChange={(event) => setEditAuthorRole(event.target.value)}
                 placeholder="Role"
-                className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+                className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
               />
               <input
                 value={editCompany}
                 onChange={(event) => setEditCompany(event.target.value)}
                 placeholder="Company"
-                className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+                className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
               />
               <select
                 value={editRating}
                 onChange={(event) => setEditRating(Number(event.target.value))}
-                className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+                className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
               >
                 {[5, 4, 3, 2, 1].map((value) => (
                   <option key={value} value={value}>
@@ -393,7 +393,7 @@ export default function AdminTestimonialsPage() {
                 value={editContent}
                 onChange={(event) => setEditContent(event.target.value)}
                 rows={5}
-                className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+                className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
               />
             </div>
             <div className="mt-6 flex justify-end gap-3">

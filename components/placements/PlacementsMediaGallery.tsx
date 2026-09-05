@@ -30,6 +30,7 @@ export function PlacementsMediaGallery({ items }: { items: PublicPlacement[] }) 
     <MediaPlaybackProvider>
       <MediaTabs
         items={mediaItems}
+        defaultTab="photos"
         emptyMessage="No placement {tab} yet. Switch tabs or check back soon."
         className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3"
         renderItem={(item) => (

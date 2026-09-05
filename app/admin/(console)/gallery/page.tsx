@@ -294,7 +294,7 @@ export default function AdminGalleryPage() {
             onChange={(event) => setNewFolderName(event.target.value)}
             disabled={creatingFolder}
             placeholder="e.g. Aarpoonam 2026"
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white disabled:opacity-60"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white disabled:opacity-60"
           />
         </label>
         <button
@@ -326,7 +326,7 @@ export default function AdminGalleryPage() {
             value={caption}
             onChange={(event) => setCaption(event.target.value)}
             disabled={uploading}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white disabled:opacity-60"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white disabled:opacity-60"
           />
         </label>
 
@@ -338,7 +338,7 @@ export default function AdminGalleryPage() {
             value={uploadFolderId}
             onChange={(event) => setUploadFolderId(event.target.value)}
             disabled={uploading}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white disabled:opacity-60"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white disabled:opacity-60"
           >
             <option value="">Unfiled</option>
             {folders.map((folder) => (
@@ -371,7 +371,7 @@ export default function AdminGalleryPage() {
           <select
             value={filterFolderId}
             onChange={(event) => setFilterFolderId(event.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
           >
             <option value="all">All items</option>
             <option value="unfiled">Unfiled</option>
@@ -392,7 +392,7 @@ export default function AdminGalleryPage() {
             value={moveFolderId}
             onChange={(event) => setMoveFolderId(event.target.value)}
             disabled={moving || selectedIds.length === 0}
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white disabled:opacity-60"
+            className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white disabled:opacity-60"
           >
             <option value="">Unfiled</option>
             {folders.map((folder) => (
@@ -499,12 +499,12 @@ export default function AdminGalleryPage() {
                 value={editCaption}
                 onChange={(event) => setEditCaption(event.target.value)}
                 placeholder="Caption"
-                className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+                className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
               />
               <select
                 value={editFolderId}
                 onChange={(event) => setEditFolderId(event.target.value)}
-                className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-white"
+                className="w-full rounded-2xl border border-white/10 bg-[#07111f] px-4 py-3 text-white"
               >
                 <option value="">Unfiled</option>
                 {folders.map((folder) => (

@@ -12,7 +12,7 @@ import {
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 import { archonContact } from "@/lib/contact";
-import { partnerLogos } from "@/lib/partners";
+import { partnerLogos, withoutDuplicatePartners } from "@/lib/partners";
 import { ORGANISATIONS_QUERY, TEAM_QUERY } from "@/lib/sanity.queries";
 import { safeSanityFetch } from "@/lib/sanity.safe";
 import type { Organisation, TeamMember } from "@/lib/sanity.types";
@@ -104,7 +104,7 @@ const aboutPageJsonLd = {
 };
 
 export default async function AboutPage() {
-  const [organisations, team] = await Promise.all([
+  const [organisationsRaw, team] = await Promise.all([
     safeSanityFetch<Organisation[]>({
       query: ORGANISATIONS_QUERY,
       tags: ["organisations"],
@@ -116,6 +116,7 @@ export default async function AboutPage() {
       defaultValue: [],
     }),
   ]);
+  const organisations = withoutDuplicatePartners(organisationsRaw);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#020611] text-white">

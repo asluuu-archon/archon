@@ -1,9 +1,7 @@
 "use client";
 
-import Image from "next/image";
-
 import { MediaTabs } from "@/components/media/MediaTabs";
-import { isVideoMedia } from "@/lib/media";
+import { UploadedMedia } from "@/components/media/UploadedMedia";
 
 export type PublicTestimonial = {
   id: string;
@@ -42,22 +40,12 @@ export function TestimonialsMediaGallery({
           <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70">
             {item.mediaUrl ? (
               <div className="relative aspect-video bg-black/40">
-                {isVideoMedia(item) ? (
-                  <video
-                    src={item.mediaUrl}
-                    controls
-                    className="h-full w-full object-cover"
-                    preload="metadata"
-                  />
-                ) : (
-                  <Image
-                    src={item.mediaUrl}
-                    alt={item.authorName || "Archon review"}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                )}
+                <UploadedMedia
+                  src={item.mediaUrl}
+                  mediaType={item.mediaType}
+                  alt={item.authorName || "Archon review"}
+                  fill
+                />
               </div>
             ) : null}
             {(item.authorName ||

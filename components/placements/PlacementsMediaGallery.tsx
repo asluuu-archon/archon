@@ -1,9 +1,7 @@
 "use client";
 
-import Image from "next/image";
-
 import { MediaTabs } from "@/components/media/MediaTabs";
-import { isVideoMedia } from "@/lib/media";
+import { UploadedMedia } from "@/components/media/UploadedMedia";
 
 export type PublicPlacement = {
   id: string;
@@ -35,26 +33,16 @@ export function PlacementsMediaGallery({ items }: { items: PublicPlacement[] }) 
           <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70">
             {item.imageUrl ? (
               <div className="relative aspect-[4/5] bg-black/40">
-                {isVideoMedia(item) ? (
-                  <video
-                    src={item.imageUrl}
-                    controls
-                    className="h-full w-full object-cover"
-                    preload="metadata"
-                  />
-                ) : (
-                  <Image
-                    src={item.imageUrl}
-                    alt={
-                      item.companyName
-                        ? `Placement at ${item.companyName}`
-                        : "Archon placement"
-                    }
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                )}
+                <UploadedMedia
+                  src={item.imageUrl}
+                  mediaType={item.mediaType}
+                  alt={
+                    item.companyName
+                      ? `Placement at ${item.companyName}`
+                      : "Archon placement"
+                  }
+                  fill
+                />
               </div>
             ) : null}
             {(item.companyName || item.course || item.salary) && (

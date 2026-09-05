@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { UploadedMedia } from "@/components/media/UploadedMedia";
 
 type GalleryItem = {
   id: string;
@@ -191,21 +191,12 @@ export default function AdminGalleryPage() {
             className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#07111f]/70"
           >
             <div className="relative aspect-[4/3] bg-black/40">
-              {isVideo(item) ? (
-                <video
-                  src={item.imageUrl}
-                  controls
-                  className="h-full w-full object-cover"
-                  preload="metadata"
-                />
-              ) : (
-                <Image
-                  src={item.imageUrl}
-                  alt={item.caption ?? "Gallery image"}
-                  fill
-                  className="object-cover"
-                />
-              )}
+              <UploadedMedia
+                src={item.imageUrl}
+                mediaType={item.mediaType}
+                alt={item.caption ?? "Gallery image"}
+                fill
+              />
             </div>
             <div className="p-4">
               <p className="text-xs uppercase tracking-[0.18em] text-cyan-300">

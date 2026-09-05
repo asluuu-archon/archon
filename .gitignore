@@ -65,3 +65,7 @@ studio/node_modules/
 # Admin uploads (keep folder, ignore uploaded files)
 /public/uploads/**
 !/public/uploads/.gitkeep
+/uploads/**
+
+# Local probe artifacts
+placement-page.tmp

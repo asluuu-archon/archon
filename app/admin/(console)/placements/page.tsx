@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ImagePlus } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { UploadedMedia } from "@/components/media/UploadedMedia";
 import { isVideoMedia } from "@/lib/media";
 
 type PlacementItem = {
@@ -246,21 +246,12 @@ export default function AdminPlacementsPage() {
           >
             {item.imageUrl ? (
               <div className="relative aspect-[4/5] bg-black/40">
-                {isVideoMedia(item) ? (
-                  <video
-                    src={item.imageUrl}
-                    controls
-                    className="h-full w-full object-cover"
-                    preload="metadata"
-                  />
-                ) : (
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.companyName || "Placement"}
-                    fill
-                    className="object-cover"
-                  />
-                )}
+                <UploadedMedia
+                  src={item.imageUrl}
+                  mediaType={item.mediaType}
+                  alt={item.companyName || "Placement"}
+                  fill
+                />
               </div>
             ) : null}
             <div className="p-4">

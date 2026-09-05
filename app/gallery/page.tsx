@@ -1,7 +1,6 @@
-import Image from "next/image";
-
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
+import { UploadedMedia } from "@/components/media/UploadedMedia";
 import { getPublishedGallery } from "@/lib/content/public-content";
 
 export const dynamic = "force-dynamic";
@@ -10,10 +9,6 @@ export const metadata = {
   title: "Gallery | Archon Solutions",
   description: "Photos and videos from Archon learning programs, consulting work, and community events.",
 };
-
-function isVideo(item: { mediaType?: string | null; imageUrl: string }) {
-  return item.mediaType === "video" || /\.(mp4|webm|mov|m4v)$/i.test(item.imageUrl);
-}
 
 export default async function GalleryPage() {
   const items = await getPublishedGallery();
@@ -43,22 +38,12 @@ export default async function GalleryPage() {
                   className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70"
                 >
                   <div className="relative aspect-[4/3] bg-black/40">
-                    {isVideo(item) ? (
-                      <video
-                        src={item.imageUrl}
-                        controls
-                        className="h-full w-full object-cover"
-                        preload="metadata"
-                      />
-                    ) : (
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.caption ?? "Archon gallery image"}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                      />
-                    )}
+                    <UploadedMedia
+                      src={item.imageUrl}
+                      mediaType={item.mediaType}
+                      alt={item.caption ?? "Archon gallery image"}
+                      fill
+                    />
                   </div>
                   {item.caption ? (
                     <p className="p-5 text-sm leading-7 text-slate-300">{item.caption}</p>

@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ImagePlus } from "lucide-react";
 
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { UploadedMedia } from "@/components/media/UploadedMedia";
 import { isVideoMedia } from "@/lib/media";
 
 type TestimonialItem = {
@@ -253,21 +253,12 @@ export default function AdminTestimonialsPage() {
           >
             {item.mediaUrl ? (
               <div className="relative aspect-video bg-black/40">
-                {isVideoMedia(item) ? (
-                  <video
-                    src={item.mediaUrl}
-                    controls
-                    className="h-full w-full object-cover"
-                    preload="metadata"
-                  />
-                ) : (
-                  <Image
-                    src={item.mediaUrl}
-                    alt={item.authorName || "Review"}
-                    fill
-                    className="object-cover"
-                  />
-                )}
+                <UploadedMedia
+                  src={item.mediaUrl}
+                  mediaType={item.mediaType}
+                  alt={item.authorName || "Review"}
+                  fill
+                />
               </div>
             ) : null}
             <div className="p-6">

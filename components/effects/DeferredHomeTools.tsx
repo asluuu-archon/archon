@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
+import { isArchonAiEnabled } from "@/lib/features";
+
 const ArchonAI = dynamic(() => import("@/components/ai/ArchonAI"), {
   ssr: false,
 });
@@ -54,9 +56,13 @@ export default function DeferredHomeTools() {
 
   return (
     <>
-      <AIContextObserver />
-      <ArchonAI />
-      <GuidedTour />
+      {isArchonAiEnabled ? (
+        <>
+          <AIContextObserver />
+          <ArchonAI />
+          <GuidedTour />
+        </>
+      ) : null}
       <ChapterTimeline />
       <InteractiveCursor />
     </>

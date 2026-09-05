@@ -9,6 +9,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import PortableArticle from "@/components/insights/PortableArticle";
+import { isArchonAiEnabled } from "@/lib/features";
 import { sanityClient } from "@/sanity/client";
 import { insightBySlugQuery } from "@/sanity/queries";
 import type { InsightArticle } from "@/sanity/types";
@@ -208,7 +209,13 @@ export default async function InsightArticlePage({
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1280px] gap-12 px-6 pt-16 lg:grid-cols-[minmax(0,760px)_280px]">
+      <div
+        className={`mx-auto grid max-w-[1280px] gap-12 px-6 pt-16 ${
+          isArchonAiEnabled || (article.tags && article.tags.length > 0)
+            ? "lg:grid-cols-[minmax(0,760px)_280px]"
+            : ""
+        }`}
+      >
         <article>
           {article.body?.length > 0 ? (
             <PortableArticle value={article.body} />
@@ -220,46 +227,58 @@ export default async function InsightArticlePage({
           )}
         </article>
 
-        <aside className="h-fit rounded-[2rem] border border-cyan-300/15 bg-cyan-300/[0.045] p-6 lg:sticky lg:top-28">
-          <div className="text-[9px] font-semibold uppercase tracking-[0.28em] text-cyan-300">
-            Explore with Archon AI
-          </div>
+        {isArchonAiEnabled || (article.tags && article.tags.length > 0) ? (
+          <aside className="h-fit rounded-[2rem] border border-cyan-300/15 bg-cyan-300/[0.045] p-6 lg:sticky lg:top-28">
+            {isArchonAiEnabled ? (
+              <>
+                <div className="text-[9px] font-semibold uppercase tracking-[0.28em] text-cyan-300">
+                  Explore with Archon AI
+                </div>
 
-          <h2 className="mt-4 text-xl font-semibold text-white">
-            Have a question about this article?
-          </h2>
+                <h2 className="mt-4 text-xl font-semibold text-white">
+                  Have a question about this article?
+                </h2>
 
-          <p className="mt-3 text-sm leading-6 text-slate-400">
-            Open Archon AI and ask for clarification, related
-            career guidance or additional practical examples.
-          </p>
+                <p className="mt-3 text-sm leading-6 text-slate-400">
+                  Open Archon AI and ask for clarification, related
+                  career guidance or additional practical examples.
+                </p>
 
-          <button
-            type="button"
-            className="mt-6 w-full rounded-full bg-cyan-300 px-5 py-3 text-sm font-semibold text-[#031018]"
-          >
-            Ask Archon AI
-          </button>
+                <button
+                  type="button"
+                  className="mt-6 w-full rounded-full bg-cyan-300 px-5 py-3 text-sm font-semibold text-[#031018]"
+                >
+                  Ask Archon AI
+                </button>
+              </>
+            ) : null}
 
-          {article.tags && article.tags.length > 0 && (
-            <div className="mt-8 border-t border-white/10 pt-6">
-              <div className="text-[9px] uppercase tracking-[0.22em] text-slate-600">
-                Topics
+            {article.tags && article.tags.length > 0 && (
+              <div
+                className={
+                  isArchonAiEnabled
+                    ? "mt-8 border-t border-white/10 pt-6"
+                    : ""
+                }
+              >
+                <div className="text-[9px] uppercase tracking-[0.22em] text-slate-600">
+                  Topics
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {article.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-[10px] text-slate-400"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {article.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2 text-[10px] text-slate-400"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </aside>
+            )}
+          </aside>
+        ) : null}
       </div>
     </main>
   );

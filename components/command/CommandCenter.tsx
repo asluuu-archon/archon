@@ -25,6 +25,8 @@ import {
   useState,
 } from "react";
 
+import { isArchonAiEnabled } from "@/lib/features";
+
 type CommandAction = {
   id: string;
   title: string;
@@ -56,7 +58,8 @@ export default function CommandCenter() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const commands = useMemo<CommandAction[]>(
-    () => [
+    () => {
+      const base: CommandAction[] = [
       {
         id: "home",
         title: "Archon Home",
@@ -255,37 +258,46 @@ export default function CommandCenter() {
         icon: ArrowRight,
         action: () => scrollToSection("contact"),
       },
-      {
-        id: "ai",
-        title: "Open Archon AI",
-        description:
-          "Ask about learning, consulting, products, careers or Archon.",
-        keywords: [
-          "ai",
-          "assistant",
-          "chat",
-          "ask",
-          "career guidance",
-        ],
-        category: "AI",
-        icon: Bot,
-        action: () => {
-          window.dispatchEvent(new Event("archon:open-ai"));
+      ];
+
+      if (!isArchonAiEnabled) {
+        return base;
+      }
+
+      return [
+        ...base,
+        {
+          id: "ai",
+          title: "Open Archon AI",
+          description:
+            "Ask about learning, consulting, products, careers or Archon.",
+          keywords: [
+            "ai",
+            "assistant",
+            "chat",
+            "ask",
+            "career guidance",
+          ],
+          category: "AI",
+          icon: Bot,
+          action: () => {
+            window.dispatchEvent(new Event("archon:open-ai"));
+          },
         },
-      },
-      {
-        id: "tour",
-        title: "Start Guided Experience",
-        description:
-          "Let Archon AI guide you through the complete ecosystem.",
-        keywords: ["tour", "guide", "experience", "walkthrough"],
-        category: "AI",
-        icon: Sparkles,
-        action: () => {
-          window.dispatchEvent(new Event("archon:start-tour"));
+        {
+          id: "tour",
+          title: "Start Guided Experience",
+          description:
+            "Let Archon AI guide you through the complete ecosystem.",
+          keywords: ["tour", "guide", "experience", "walkthrough"],
+          category: "AI",
+          icon: Sparkles,
+          action: () => {
+            window.dispatchEvent(new Event("archon:start-tour"));
+          },
         },
-      },
-    ],
+      ];
+    },
     []
   );
 
@@ -597,22 +609,24 @@ export default function CommandCenter() {
                       products, campus, founder or contact.
                     </p>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setOpen(false);
+                    {isArchonAiEnabled ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setOpen(false);
 
-                        window.setTimeout(() => {
-                          window.dispatchEvent(
-                            new Event("archon:open-ai")
-                          );
-                        }, 200);
-                      }}
-                      className="mt-6 flex items-center gap-3 rounded-full border border-cyan-300/25 bg-cyan-300/[0.08] px-5 py-3 text-sm font-semibold text-white transition hover:bg-cyan-300/[0.13]"
-                    >
-                      Ask Archon AI
-                      <Bot className="h-4 w-4 text-cyan-300" />
-                    </button>
+                          window.setTimeout(() => {
+                            window.dispatchEvent(
+                              new Event("archon:open-ai")
+                            );
+                          }, 200);
+                        }}
+                        className="mt-6 flex items-center gap-3 rounded-full border border-cyan-300/25 bg-cyan-300/[0.08] px-5 py-3 text-sm font-semibold text-white transition hover:bg-cyan-300/[0.13]"
+                      >
+                        Ask Archon AI
+                        <Bot className="h-4 w-4 text-cyan-300" />
+                      </button>
+                    ) : null}
                   </div>
                 )}
               </div>
@@ -623,22 +637,24 @@ export default function CommandCenter() {
                     Archon Digital Headquarters
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false);
+                  {isArchonAiEnabled ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false);
 
-                      window.setTimeout(() => {
-                        window.dispatchEvent(
-                          new Event("archon:open-ai")
-                        );
-                      }, 180);
-                    }}
-                    className="flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.22em] text-cyan-300 transition hover:text-cyan-100"
-                  >
-                    Ask Archon AI
-                    <Sparkles className="h-3.5 w-3.5" />
-                  </button>
+                        window.setTimeout(() => {
+                          window.dispatchEvent(
+                            new Event("archon:open-ai")
+                          );
+                        }, 180);
+                      }}
+                      className="flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.22em] text-cyan-300 transition hover:text-cyan-100"
+                    >
+                      Ask Archon AI
+                      <Sparkles className="h-3.5 w-3.5" />
+                    </button>
+                  ) : null}
                 </div>
               </div>
             </motion.section>

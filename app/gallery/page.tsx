@@ -37,7 +37,7 @@ export default async function GalleryPage() {
                   key={item.id}
                   className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70"
                 >
-                  <div className="relative aspect-[4/3] bg-black/40">
+                  <div className="relative mx-auto aspect-[9/16] w-full max-w-sm bg-black/40">
                     <UploadedMedia
                       src={item.imageUrl}
                       mediaType={item.mediaType}

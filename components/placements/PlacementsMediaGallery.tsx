@@ -32,7 +32,7 @@ export function PlacementsMediaGallery({ items }: { items: PublicPlacement[] }) 
         renderItem={(item) => (
           <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70">
             {item.imageUrl ? (
-              <div className="relative aspect-[4/5] bg-black/40">
+              <div className="relative mx-auto aspect-[9/16] w-full max-w-sm bg-black/40">
                 <UploadedMedia
                   src={item.imageUrl}
                   mediaType={item.mediaType}

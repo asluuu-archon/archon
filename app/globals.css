@@ -217,3 +217,15 @@
   animation-timing-function: ease-out;
   animation-iteration-count: infinite;
 }
+
+/* Discourage downloading admin-uploaded photos/videos in the browser UI */
+video[controlslist*="nodownload"]::-internal-media-controls-download-button,
+video[controlslist*="nodownload"]::-webkit-media-controls-download-button {
+  display: none !important;
+}
+
+img[draggable="false"] {
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}

@@ -245,7 +245,7 @@ export default function AdminPlacementsPage() {
             className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#07111f]/70"
           >
             {item.imageUrl ? (
-              <div className="relative aspect-[4/5] bg-black/40">
+              <div className="relative mx-auto aspect-[9/16] w-full max-w-sm bg-black/40">
                 <UploadedMedia
                   src={item.imageUrl}
                   mediaType={item.mediaType}

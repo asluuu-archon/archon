@@ -39,7 +39,7 @@ export function TestimonialsMediaGallery({
         renderItem={(item) => (
           <article className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f]/70">
             {item.mediaUrl ? (
-              <div className="relative aspect-video bg-black/40">
+              <div className="relative mx-auto aspect-[9/16] w-full max-w-sm bg-black/40">
                 <UploadedMedia
                   src={item.mediaUrl}
                   mediaType={item.mediaType}
